@@ -1,0 +1,2 @@
+Disk Usage|bash -c 'dust -r; read -n 1 -s'|float|Disk Usage.png
+Docker|lazydocker|tile|Docker.png

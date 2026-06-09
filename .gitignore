@@ -1,0 +1,11 @@
+/.bashrc
+/.bashrc.d
+/.config
+/.local
+erch/
+*.bak
+*.bak.*
+.DS_Store
+*.swp
+*.swo
+*~

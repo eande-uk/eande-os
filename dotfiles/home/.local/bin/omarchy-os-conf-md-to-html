@@ -1,0 +1,58 @@
+#!/bin/bash
+# omarchy:summary=Convert Markdown to standalone styled HTML via pandoc
+# omarchy:group=os-conf
+# omarchy:name=md-to-html
+# omarchy:examples=omarchy os-conf md-to-html input.md [output.html]
+
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+omarchy os-conf md-to-html — Convert Markdown to standalone styled HTML via pandoc
+
+Usage:
+  omarchy os-conf md-to-html input.md [output.html]
+
+If no output is given, replaces .md extension with .html.
+Generates a dark GitHub-like CSS at ~/.dotfiles/gh-style.css on first run.
+EOF
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && usage
+[[ $# -lt 1 || $# -gt 2 ]] && { echo "Usage: $(basename "$0") input.md [output.html]" >&2; exit 1; }
+
+INPUT="$1"
+[[ ! -f "$INPUT" ]] && { gum style --foreground "#BF616A" "File not found: $INPUT"; exit 1; }
+OUT="${2:-${INPUT%.*}.html}"
+CSS="$HOME/.dotfiles/gh-style.css"
+
+command -v pandoc >/dev/null 2>&1 || { gum style --foreground "#BF616A" "pandoc not found"; exit 1; }
+
+if [[ ! -f "$CSS" ]]; then
+  mkdir -p "$HOME/.dotfiles"
+  cat >"$CSS" <<'CSS'
+:root{
+  --bg:#0b1220; --panel:#0f1724; --muted:#9aa4b2; --text:#cbd5e1;
+  --accent:#58a6ff; --code-bg:#071127; --pre-bg:#020617; --border:#22303f;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;line-height:1.6;padding:32px;max-width:860px;margin:0 auto}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3,h4,h5,h6{color:var(--text);font-weight:600;margin-top:1.6em;margin-bottom:.4em}
+h1{font-size:2.25rem}h2{font-size:1.5rem}h3{font-size:1.25rem}
+p{margin:0 0 1em}
+code{background:var(--code-bg);color:var(--text);padding:.15em .4em;border-radius:6px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:.95em;border:1px solid var(--border)}
+pre{background:var(--pre-bg);color:var(--text);padding:16px;overflow:auto;border-radius:6px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:.9em;border:1px solid var(--border)}
+blockquote{border-left:4px solid rgba(255,255,255,0.06);color:var(--muted);padding:.2em 1em;margin:0 0 1em}
+table{border-collapse:collapse;margin:0 0 1em;width:100%}
+th,td{border:1px solid rgba(255,255,255,0.04);padding:.45em .75em}
+th{background:rgba(255,255,255,0.02)}img{max-width:100%}
+hr{border:none;border-top:1px solid rgba(255,255,255,0.04);margin:1.5em 0}
+CSS
+  gum style --foreground "#88C0D0" "  Created default CSS: $CSS"
+fi
+
+gum spin --spinner dot --title "Converting $INPUT → $OUT" -- \
+  pandoc "$INPUT" -o "$OUT" --embed-resources --standalone --css="$CSS"
+
+gum style --foreground "#A3BE8C" "  Wrote $OUT"

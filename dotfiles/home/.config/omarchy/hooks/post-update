@@ -1,0 +1,23 @@
+#!/bin/bash
+# omarchy:summary=Restore custom theme visibility after erch update
+# omarchy:group=os-conf
+# omarchy:name=post-update
+
+# Re-hide stock themes that aren't in our custom set
+# erch update reintroduces stock themes; this restores our curated view
+STOCK_SRC="$HOME/.local/share/omarchy/themes"
+STOCK_DST="$HOME/.config/omarchy/stock-themes"
+CUSTOM="$HOME/.config/omarchy/themes"
+
+if [[ -d "$STOCK_SRC" ]]; then
+  mkdir -p "$STOCK_DST"
+  for theme_dir in "$STOCK_SRC"/*/; do
+    theme="$(basename "$theme_dir")"
+    if [[ -d "$theme_dir" && ! -d "$CUSTOM/$theme" ]]; then
+      rm -rf "$STOCK_DST/$theme"
+      mv "$theme_dir" "$STOCK_DST/"
+    fi
+  done
+fi
+
+notify-send -u low "os-conf" "Post-update: themes restored"

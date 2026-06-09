@@ -1,0 +1,11 @@
+#!/bin/bash
+# omarchy:summary=Stage all and commit with convention
+# omarchy:group=os-conf
+# omarchy:name=commit
+# omarchy:examples=omarchy os-conf commit TYPE=feat SCOPE=tiling DESC="add vim mode toggle"
+
+set -euo pipefail
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/eande/os-conf/dotfiles}"
+
+exec make -C "$DOTFILES_DIR" commit "$@"

@@ -1,0 +1,11 @@
+#!/bin/bash
+# omarchy:summary=Open PR from current branch to main
+# omarchy:group=os-conf
+# omarchy:name=pr
+# omarchy:examples=omarchy os-conf pr
+
+set -euo pipefail
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/eande/os-conf/dotfiles}"
+
+exec make -C "$DOTFILES_DIR" pr

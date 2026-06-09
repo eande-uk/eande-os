@@ -1,0 +1,7 @@
+alias ltt='tmux new-session -A -s lazygit lazygit'
+alias ls='eza -la --group-directories-first'
+alias grep='rg --smart-case'
+alias cat='bat'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'

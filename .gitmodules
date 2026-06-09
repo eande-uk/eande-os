@@ -1,0 +1,4 @@
+[submodule "erch"]
+	path = erch
+	url = git@github.com:eande-uk/erch.git
+	branch = eande-os

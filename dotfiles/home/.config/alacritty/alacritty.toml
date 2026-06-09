@@ -1,0 +1,28 @@
+# E&E UK — Alacritty terminal config (Theme import)
+# Theme colors loaded at runtime. Everything else inline.
+
+general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ]
+
+[env]
+TERM = "xterm-256color"
+
+[terminal]
+osc52 = "CopyPaste"
+
+[font]
+normal = { family = "JetBrainsMonoNL Nerd Font Mono", style = "Regular" }
+bold = { family = "JetBrainsMonoNL Nerd Font Mono", style = "Bold" }
+italic = { family = "JetBrainsMonoNL Nerd Font Mono", style = "Italic" }
+size = 9
+
+[window]
+padding.x = 14
+padding.y = 14
+decorations = "None"
+
+[keyboard]
+bindings = [
+  { key = "Insert", mods = "Shift", action = "Paste" },
+  { key = "Insert", mods = "Control", action = "Copy" },
+  { key = "Return", mods = "Shift", chars = "\u001B\r" }
+]

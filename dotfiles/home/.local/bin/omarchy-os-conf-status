@@ -1,0 +1,11 @@
+#!/bin/bash
+# omarchy:summary=Show repo and deployment status
+# omarchy:group=os-conf
+# omarchy:name=status
+# omarchy:examples=omarchy os-conf status
+
+set -euo pipefail
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/eande/os-conf/dotfiles}"
+
+exec make -C "$DOTFILES_DIR" status
