@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+DOTFILES_DIR="$(cd "$(dirname "$0")/../dotfiles" && pwd)"
 STOW_TARGET="$HOME"
 BACKUP_BASE="$HOME/.config/omarchy/backups"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
