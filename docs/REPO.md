@@ -25,7 +25,7 @@ eande-os/
 │   ├── config.sh      # Active bloat categories
 │   ├── layer-zero.sh  # Sync engine
 │   ├── bloat/         # Category definitions
-│   └── profiles/      # Profile package lists
+│   ├── profiles/      # Profile package lists (WORK, EDUCATION, GAME)
 ├── scripts/           # Deployment tooling
 │   ├── deploy.sh      # Stow-based deploy
 │   └── setup.sh       # Bootstrap orchestrator

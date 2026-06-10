@@ -32,3 +32,5 @@ ecosystem.
 ## Repository
 
 - **[REPO.md](REPO.md)** — Repository reference (Make, scripts, tests, contributing)
+- **[dotfiles/home/.config/README.md](../dotfiles/home/.config/README.md)** — Config reference with override patterns
+- **[erch/AGENTS.md](../erch/AGENTS.md)** — erch dev conventions, command naming, metadata

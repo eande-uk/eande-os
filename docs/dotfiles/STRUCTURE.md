@@ -75,7 +75,7 @@ stow --no-folding -t $HOME home/
 This creates symlinks:
 - `~/.bashrc` → `dotfiles/home/.bashrc`
 - `~/.config/hypr/bindings.conf` → `dotfiles/home/.config/hypr/bindings.conf`
-- `~/.local/bin/fd-rename` → `dotfiles/home/.local/bin/fd-rename`
+- `~/.local/bin/omarchy-os-conf-status` → `dotfiles/home/.local/bin/omarchy-os-conf-status`
 
 Editing `~/.config/` automatically syncs back to the repo.
 
@@ -85,6 +85,7 @@ Editing `~/.config/` automatically syncs back to the repo.
 
 ```
 .config/hypr/hyprland.conf
+config/hypr/hyprland.conf
 ```
 
 `hyprland.conf` is the orchestrator file. On upstream omarchy, it sources

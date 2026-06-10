@@ -1,0 +1,20 @@
+# Profile: WORK:Office
+# Non-developer employees. Office productivity, communication, and basic tools.
+libreoffice-fresh
+evince
+xournalpp
+thunderbird
+signal-desktop
+zoom
+chromium
+firefox
+mpv
+imv
+gnome-calculator
+cups
+cups-browsed
+system-config-printer
+nextcloud-client
+gvfs-mtp
+gvfs-nfs
+gvfs-smb

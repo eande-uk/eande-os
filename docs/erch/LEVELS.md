@@ -26,7 +26,7 @@ package composition per profile.
 
 ## Level 1: Defaults
 
-**Phase:** `install/config/`
+**Phase:** `install/defaults/`
 
 Core operating environment. Shell, environment variables, input, and display
 server defaults.

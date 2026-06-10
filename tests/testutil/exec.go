@@ -10,12 +10,12 @@ import (
 )
 
 func RunMake(tc *TestContext, target string, args ...string) (string, error) {
-	makefile := filepath.Join(tc.DotfilesRoot, "Makefile")
+	makefile := filepath.Join(tc.RepoRoot, "Makefile")
 	if _, err := os.Stat(makefile); err != nil {
 		return "", fmt.Errorf("Makefile not found at %s: %w", makefile, err)
 	}
 
-	cmdArgs := append([]string{"-C", tc.DotfilesRoot, target}, args...)
+	cmdArgs := append([]string{"-C", tc.RepoRoot, target}, args...)
 	return runCommand("make", cmdArgs...)
 }
 

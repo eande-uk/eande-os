@@ -6,6 +6,9 @@ Three targets, one config. **erch** is the source of truth; **dotfiles/**
 mirrors it for non-erch systems; **layer-zero/** manages packages across
 all platforms.
 
+**Always work on a `user/<name>` branch** — never commit directly to master.
+See [docs/REPO.md](docs/REPO.md) for the branching model.
+
 ## Architecture
 
 ```
@@ -75,3 +78,5 @@ hyprctl reload
 | `make layer-zero` | Interactive package sync |
 | `make commit` | Stage + commit |
 | `make pr` | Open PR to master |
+
+See **[docs/REPO.md](docs/REPO.md)** for the full list of 25+ targets.

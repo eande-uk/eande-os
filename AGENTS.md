@@ -49,12 +49,35 @@ EDUCATION:School/Uni, GAME).
 
 | Target | Description |
 |--------|-------------|
-| `make deploy` | Stow dotfiles to $HOME |
-| `make test` | Run Go tests |
-| `make layer-zero` | Interactive package sync |
-| `make commit` | Stage + commit |
-| `make pr` | Open PR to master |
-| `make erch/init` | Init erch submodule |
+| **Lifecycle** | |
+| `init` | Create branch `user/$USER` from master + deploy |
+| `setup` | Full bootstrap: init + layer-zero sync |
+| **Deploy** | |
+| `deploy` | Link configs via stow (with backup, errors on master) |
+| `deploy/dry-run` | Preview what deploy would change |
+| `deploy/restock` | Re-apply master defaults |
+| `adopt` | Adopt existing `~/.config/` as branch defaults |
+| **Inspect** | |
+| `status` | Show branch, uncommitted changes, stow state |
+| **Layer 0** | |
+| `layer-zero` | Interactive two-direction sync |
+| `layer-zero/apply` | Apply without confirm |
+| `layer-zero/dry-run` | Preview only |
+| **Theme** | |
+| `theme/list` | `omarchy theme list` |
+| `theme/set NAME=n` | `omarchy theme set` |
+| **Tests** | |
+| `test` | Run verification tests (verbose) |
+| `test/quiet` | Run verification tests (quiet) |
+| **Git** | |
+| `diff` | Show uncommitted changes |
+| `log` | Recent commits (15) |
+| `commit TYPE=t SCOPE=s DESC=d` | Stage all + commit with convention |
+| **erch** | |
+| `erch/init` | Init submodule + deploy to `~/.local/share/omarchy/` |
+| **Contributing** | |
+| `branch/create` | Create `user/$USER` branch from master |
+| `pr` | Open PR from current branch → master |
 
 ## Layer System (erch)
 

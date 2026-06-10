@@ -16,7 +16,7 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 	}
 
 	testutil.RunVerify(t, "AGENTS.md references make targets that exist in Makefile", func() error {
-		makefile, err := os.ReadFile(tc.DotfilesPath("Makefile"))
+		makefile, err := os.ReadFile(tc.RepoPath("Makefile"))
 		if err != nil {
 			return err
 		}
@@ -55,7 +55,7 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 			purpose  string
 		}{
 			{tc.LayerZeroDir, "Layer 0 directory"},
-			{tc.DotfilesPath("omarchy-default"), "Layer 2 themes directory"},
+			{tc.DotfilesPath("home", ".config", "omarchy", "themes"), "Layer 2 themes directory"},
 			{tc.DotfilesPath("home", ".config", "hypr"), "Layer 3 config directory"},
 			{tc.LocalBinDir, "Layer 4 scripts directory"},
 		}
@@ -71,15 +71,15 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 		return nil
 	})
 
-	testutil.RunVerify(t, "dotfiles/README.md file descriptions match actual files", func() error {
-		dotfilesReadme, err := os.ReadFile(tc.DotfilesPath("README.md"))
+	testutil.RunVerify(t, "dotfiles/home/.config/README.md references actual config paths", func() error {
+		dotfilesReadme, err := os.ReadFile(tc.DotfilesPath("home", ".config", "README.md"))
 		if err != nil {
 			return err
 		}
 
 		content := string(dotfilesReadme)
 		if !strings.Contains(content, "home/") {
-			return errFail("dotfiles/README.md missing home/ directory reference")
+			return errFail("dotfiles/home/.config/README.md missing home/ reference")
 		}
 
 		checks := []struct {
@@ -89,9 +89,6 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 			{"home/.config/hypr/hyprland.conf", "hyprland.conf"},
 			{"home/.config/hypr/bindings.conf", "bindings.conf"},
 			{"home/.config/hypr/tiling.conf", "tiling.conf"},
-			{"omarchy-default/toggles/tiling-mode.conf", "tiling-mode.conf"},
-			{"layer-zero/layer-zero.sh", "layer-zero.sh"},
-			{"scripts/deploy.sh", "deploy.sh"},
 		}
 		for _, c := range checks {
 			fullPath := filepath.Join(tc.DotfilesRoot, filepath.FromSlash(c.file))
@@ -101,14 +98,14 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 			}
 			_ = info
 			if !strings.Contains(content, c.pattern) {
-				return errFail("dotfiles/README.md missing reference to: " + c.pattern)
+				return errFail("dotfiles/home/.config/README.md missing reference to: " + c.pattern)
 			}
 		}
 		return nil
 	})
 
 	testutil.RunVerify(t, "Makefile .PHONY targets have matching recipes", func() error {
-		makefile, err := os.ReadFile(tc.DotfilesPath("Makefile"))
+		makefile, err := os.ReadFile(tc.RepoPath("Makefile"))
 		if err != nil {
 			return err
 		}
@@ -149,7 +146,7 @@ func TestBranchingModelConsistency(t *testing.T) {
 	docFiles := []string{
 		tc.RepoPath("AGENTS.md"),
 		tc.RepoPath("README.md"),
-		tc.DotfilesPath("README.md"),
+		tc.DotfilesPath("home", ".config", "README.md"),
 	}
 
 	for _, doc := range docFiles {

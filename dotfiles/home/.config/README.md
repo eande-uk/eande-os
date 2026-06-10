@@ -2,6 +2,8 @@
 
 All files in this directory are symlinked to `~/.config/` by GNU Stow (via `make deploy`). The repo is the source of truth.
 
+Always work on a `user/<name>` branch (`make branch/create`). Never commit to master directly.
+
 Note: Files directly under `home/` (`.bashrc`, `.bashrc.d/`, `.local/bin/`) are also stowed to `$HOME`.
 
 Every file follows: **inherit** (Omarchy form/defaults) → **override** (repo dotfiles) → **apply** (stow via `make deploy`, backwards compatible with `omarchy cmd`).

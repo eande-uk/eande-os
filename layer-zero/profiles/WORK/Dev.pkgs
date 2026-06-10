@@ -1,0 +1,25 @@
+# Profile: WORK:Dev
+# Software developers. All runtimes, containers, and development tooling.
+python
+nodejs
+go
+rust
+dotnet-runtime-9.0
+docker
+docker-compose
+docker-buildx
+clang
+llvm
+ruby
+tree-sitter-cli
+neovim
+git
+gh
+lazygit
+lazydocker
+mise
+jq
+yq
+postgresql-libs
+mariadb-libs
+sqlite

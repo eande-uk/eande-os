@@ -43,19 +43,19 @@ func NewTestContext() (*TestContext, error) {
 	if v := os.Getenv("DOTFILES_ROOT"); v != "" {
 		tc.DotfilesRoot = v
 	} else {
-		_, file, _, ok := runtime.Caller(0)
-		if !ok {
-			return nil, fmt.Errorf("cannot determine dotfiles root")
-		}
-		tc.DotfilesRoot = filepath.Dir(filepath.Dir(filepath.Dir(file)))
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil, fmt.Errorf("cannot determine dotfiles root")
+	}
+	tc.DotfilesRoot = filepath.Join(filepath.Dir(filepath.Dir(filepath.Dir(file))), "dotfiles")
 	}
 
 	tc.RepoRoot = filepath.Dir(tc.DotfilesRoot)
-	tc.TestsDir = filepath.Join(tc.DotfilesRoot, "tests")
-	tc.ScriptsDir = filepath.Join(tc.DotfilesRoot, "scripts")
+	tc.TestsDir = filepath.Join(tc.RepoRoot, "tests")
+	tc.ScriptsDir = filepath.Join(tc.RepoRoot, "scripts")
 	tc.LocalBinDir = filepath.Join(tc.DotfilesRoot, "home", ".local", "bin")
-	tc.BloatDir = filepath.Join(tc.DotfilesRoot, "layer-zero", "bloat")
-	tc.LayerZeroDir = filepath.Join(tc.DotfilesRoot, "layer-zero")
+	tc.BloatDir = filepath.Join(tc.RepoRoot, "layer-zero", "bloat")
+	tc.LayerZeroDir = filepath.Join(tc.RepoRoot, "layer-zero")
 
 	return tc, nil
 }

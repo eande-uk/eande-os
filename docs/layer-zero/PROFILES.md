@@ -95,18 +95,37 @@ Packages are organized in category files under `layer-zero/bloat/`:
 
 ```
 layer-zero/bloat/
-├── browsers.pkgs
+├── browsers.pkgs              # Items to prune (not on allowlist)
+├── browsers-install.pkgs      # Items to install (on allowlist)
 ├── communication.pkgs
+├── communication-install.pkgs
 ├── gaming.pkgs
+├── gaming-install.pkgs
 ├── media.pkgs
+├── media-install.pkgs
 ├── npx.pkgs
+├── npx-install.pkgs
 ├── office.pkgs
+├── office-install.pkgs
 ├── runtimes.pkgs
+├── runtimes-install.pkgs
 ├── terminals.pkgs
+├── terminals-install.pkgs
 ├── tui.pkgs
-└── webapps.pkgs
+├── tui-install.pkgs
+├── webapps.pkgs
+└── webapps-install.pkgs
 ```
 
+Each category has a dual-file pattern:
+
+| File | Purpose |
+|------|---------|
+| `{category}.pkgs` | Items to **remove** — pruned if not on the allowlist |
+| `{category}-install.pkgs` | Items to **install** — ensured present if on the allowlist |
+
+The two-direction sync uses both files in tandem: items ON the allowlist in
+`-install.pkgs` get installed; items NOT on the allowlist in `.pkgs` get removed.
 Profile definitions reference these categories and add specific packages
 within each.
 
@@ -132,6 +151,6 @@ profile system with:
 - **Blocklist**: certain packages cannot be installed
 - **Approval queue**: updates require admin approval
 
-See [erch/MANAGED.md](../erch/PROFILES.md#managed-mode-organizations) for
+See [erch/PROFILES.md](../erch/PROFILES.md#managed-mode-organizations) for
 details. Managed mode is documented as desired state and will be built
 incrementally.

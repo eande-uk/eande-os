@@ -36,26 +36,10 @@ has active categories), then delegates to `deploy.sh`.
 ### `../layer-zero/layer-zero.sh`
 
 Layer Zero — two-direction sync (install + remove). Lives under `layer-zero/`, not `scripts/`.
-See `dotfiles/README.md` for full docs.
+See `docs/layer-zero/OVERVIEW.md` for full docs.
 
 ```bash
 ./layer-zero/layer-zero.sh              # Interactive sync
 ./layer-zero/layer-zero.sh --dry-run    # Preview only
 ./layer-zero/layer-zero.sh --apply      # Skip confirm, sync immediately
 ```
-
-## User-facing scripts
-
-These are deployed to `~/.local/bin/` via `make deploy` and available on PATH.
-Edit them at `dotfiles/home/.local/bin/<script>`.
-
-| Script | Purpose |
-|--------|---------|
-| `fd-rename` | Batch file renamer using `fd`. Dry-run by default; `--confirm` to apply. |
-| `ddcutil-brightness` | External monitor brightness via DDC/CI. Detects focused monitor. |
-| `ddcutil-source` | Interactive external monitor input source picker via DDC/CI. |
-| `md-to-html` | Markdown → standalone HTML with dark GitHub CSS via pandoc. |
-| `mmd` | Mermaid diagram → SVG/PNG via Docker (`minlag/mermaid-cli`). |
-| `monitor-scaling-toggle` | Cycle display scaling 1.00 → 2.00 → 3.13 across all monitors. |
-| `system-idle` | Lock + DPMS off after 10s delay. Called by hypridle. |
-| `system-idle-resume` | Restore displays and backlight after idle. |

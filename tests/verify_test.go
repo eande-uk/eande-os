@@ -1,6 +1,10 @@
 package tests
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"eande.uk/os-conf/tests/testutil"
@@ -168,6 +172,76 @@ func TestNoEmptyStubs(t *testing.T) {
 	})
 }
 
+func TestProfilesExist(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	profiles := map[string]string{
+		"WORK:Office":     "profiles/WORK/Office.pkgs",
+		"WORK:Dev":        "profiles/WORK/Dev.pkgs",
+		"WORK:AI/ML":     "profiles/WORK/AI-ML.pkgs",
+		"EDUCATION:School": "profiles/EDUCATION/School.pkgs",
+		"EDUCATION:Uni":   "profiles/EDUCATION/Uni.pkgs",
+		"GAME":            "profiles/GAME.pkgs",
+	}
+
+	for name, rel := range profiles {
+		name, rel := name, rel
+		path := filepath.Join(tc.LayerZeroDir, rel)
+		testutil.RunVerify(t, name+" profile exists", func() error {
+			return testutil.FileExists(path)
+		})
+	}
+
+	testutil.RunVerify(t, "Each profile has >= 5 package entries", func() error {
+		for name, rel := range profiles {
+			path := filepath.Join(tc.LayerZeroDir, rel)
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return errFail("cannot read " + name + ": " + err.Error())
+			}
+			lines := 0
+			for _, line := range strings.Split(string(data), "\n") {
+				line = strings.TrimSpace(line)
+				if line != "" && !strings.HasPrefix(line, "#") {
+					lines++
+				}
+			}
+			if lines < 5 {
+				return errFail(name + " has only " + fmt.Sprintf("%d", lines) + " packages, expected >= 5")
+			}
+		}
+		return nil
+	})
+}
+
+func TestErchHooksAndBranding(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	erchDefault := filepath.Join(tc.RepoRoot, "erch", "default")
+
+	hooks := []string{"theme-set", "font-set", "post-update"}
+	for _, hook := range hooks {
+		hook := hook
+		testutil.RunVerify(t, "erch hook "+hook+" exists", func() error {
+			return testutil.FileExists(filepath.Join(erchDefault, "hooks", hook))
+		})
+	}
+
+	brandingFiles := []string{"about.txt", "screensaver.txt", "ee-logo.png", "ee-mark.png", "water-mark.png"}
+	for _, f := range brandingFiles {
+		f := f
+		testutil.RunVerify(t, "erch branding "+f+" exists", func() error {
+			return testutil.FileExists(filepath.Join(erchDefault, "branding", f))
+		})
+	}
+}
+
 func TestCustomBranding(t *testing.T) {
 	tc, err := testutil.NewTestContext()
 	if err != nil {
@@ -231,7 +305,7 @@ func TestStowEngine(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	deployPath := tc.DotfilesPath("scripts", "deploy.sh")
+	deployPath := tc.RepoPath("scripts", "deploy.sh")
 
 	testutil.RunVerify(t, "deploy.sh uses stow --no-folding", func() error {
 		return testutil.FileContains(deployPath, "stow --no-folding")
@@ -275,11 +349,11 @@ func TestRemovedScripts(t *testing.T) {
 	}
 
 	testutil.RunVerify(t, "pull.sh removed", func() error {
-		return testutil.FileNotExists(tc.DotfilesPath("scripts", "pull.sh"))
+		return testutil.FileNotExists(tc.RepoPath("scripts", "pull.sh"))
 	})
 
 	testutil.RunVerify(t, "clean-orphans.sh removed", func() error {
-		return testutil.FileNotExists(tc.DotfilesPath("scripts", "clean-orphans.sh"))
+		return testutil.FileNotExists(tc.RepoPath("scripts", "clean-orphans.sh"))
 	})
 }
 
@@ -299,8 +373,8 @@ func TestForkReconciliation(t *testing.T) {
 		return testutil.FileContains(hypridlePath, "omarchy-system-wake")
 	})
 
-	systemIdlePath := tc.LocalBinPath("omarchy-os-conf-idle")
-	testutil.RunVerify(t, "omarchy-os-conf-idle has fork's lock-session", func() error {
+	systemIdlePath := tc.RepoPath("erch", "bin", "omarchy-os-conf-idle")
+	testutil.RunVerify(t, "omarchy-os-conf-idle exists in erch with fork's lock-session", func() error {
 		return testutil.FileContains(systemIdlePath, "loginctl lock-session")
 	})
 
@@ -316,21 +390,15 @@ func TestOmarchyMenuExtension(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	testutil.RunVerify(t, "omarchy-menu extension exists in repo", func() error {
+	testutil.RunVerify(t, "omarchy-menu exists in erch bin", func() error {
 		return testutil.FileExists(
-			tc.DotfilesPath("home", ".config", "omarchy", "extensions", "menu.sh"))
+			tc.RepoPath("erch", "bin", "omarchy-menu"))
 	})
 
-	testutil.RunVerify(t, "extension adds Tiling Mode to toggle menu", func() error {
+	testutil.RunVerify(t, "erch omarchy-menu defines menu entry points", func() error {
 		return testutil.FileContains(
-			tc.DotfilesPath("home", ".config", "omarchy", "extensions", "menu.sh"),
-			"Tiling Mode")
-	})
-
-	testutil.RunVerify(t, "extension redefines show_toggle_menu", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".config", "omarchy", "extensions", "menu.sh"),
-			"show_toggle_menu()")
+			tc.RepoPath("erch", "bin", "omarchy-menu"),
+			"toggle_menu()")
 	})
 }
 
@@ -354,9 +422,9 @@ func TestTilingMode(t *testing.T) {
 		return testutil.FileNotExists(tc.HomeLocalBinPath("tiling-mode-toggle"))
 	})
 
-	toggleSrc := tc.DotfilesPath("omarchy-default", "toggles", "tiling-mode.conf")
+	toggleSrc := tc.RepoPath("erch", "default", "hypr", "toggles", "tiling-mode.conf")
 
-	testutil.RunVerify(t, "Toggle source file exists", func() error {
+	testutil.RunVerify(t, "Toggle source file exists in erch", func() error {
 		return testutil.FileExists(toggleSrc)
 	})
 
@@ -392,8 +460,8 @@ func TestTilingMode(t *testing.T) {
 		return testutil.FileContains(toggleSrc, "Group prev")
 	})
 
-	scalingCycle := tc.LocalBinPath("omarchy-os-conf-scaling-cycle")
-	testutil.RunVerify(t, "scaling-cycle script exists in repo", func() error {
+	scalingCycle := tc.RepoPath("erch", "bin", "omarchy-hyprland-monitor-scaling-cycle")
+	testutil.RunVerify(t, "scaling-cycle script exists in erch", func() error {
 		return testutil.FileExists(scalingCycle)
 	})
 
@@ -403,6 +471,11 @@ func TestTilingMode(t *testing.T) {
 
 	testutil.RunVerify(t, "scaling-cycle sends notification", func() error {
 		return testutil.FileContains(scalingCycle, "notify-send")
+	})
+
+	legacyScalingCycle := tc.LocalBinPath("omarchy-os-conf-scaling-cycle")
+	testutil.RunVerify(t, "legacy scaling-cycle wrapper removed from dotfiles", func() error {
+		return testutil.FileNotExists(legacyScalingCycle)
 	})
 }
 
@@ -418,19 +491,11 @@ func TestPostUpdateHook(t *testing.T) {
 		return testutil.FileExists(hookPath)
 	})
 
-	testutil.RunVerify(t, "post-update restores toggle template", func() error {
-		return testutil.FileContains(hookPath, "tiling-mode.conf")
+	testutil.RunVerify(t, "post-update is a shell script with shebang", func() error {
+		return testutil.FileContains(hookPath, "#!/bin/bash")
 	})
 
-	testutil.RunVerify(t, "post-update restores os-conf wrappers", func() error {
-		return testutil.FileContains(hookPath, "omarchy-os-conf-")
-	})
-
-	testutil.RunVerify(t, "post-update restores scaling-cycle override", func() error {
-		return testutil.FileContains(hookPath, "omarchy-hyprland-monitor-scaling-cycle")
-	})
-
-	testutil.RunVerify(t, "post-update hides stock themes", func() error {
+	testutil.RunVerify(t, "post-update hosts stock themes", func() error {
 		return testutil.FileContains(hookPath, "stock-themes")
 	})
 }

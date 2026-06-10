@@ -1,0 +1,17 @@
+# Profile: GAME
+# Gaming-focused setup. Game stores, emulators, gaming optimizations.
+steam
+heroic-games-launcher
+lutris
+retroarch
+dolphin-emu
+pcsx2
+moonlight-qt
+gamemode
+mangohud
+goverlay
+wine
+winetricks
+protonup-qt
+obs-studio
+gpu-screen-recorder

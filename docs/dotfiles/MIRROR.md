@@ -34,19 +34,18 @@ scripts, migrations, 280+ omarchy CLI commands) stays in erch.
 **Always erch → dotfiles/**. Changes originate in erch (the fork) and are
 copied to dotfiles/ for the parent repo.
 
-dotfiles/ can fetch the current erch config state:
+dotfiles/ can be synced from the current erch config state manually:
 
+```bash
+# Sync erch configs → dotfiles/
+cp -r erch/config/*        dotfiles/home/.config/
+cp -r erch/default/bash/*  dotfiles/home/.bashrc.d/
+cp -r erch/themes/*        dotfiles/home/.config/omarchy/themes/
+cp    erch/bin/omarchy-os-conf-* dotfiles/home/.local/bin/
 ```
-./scripts/sync-from-erch.sh    # Copy erch configs → dotfiles/
-```
 
-This script (desired state — not yet implemented) would:
-
-1. Copy `erch/config/<app>/` → `dotfiles/home/.config/<app>/`
-2. Copy `erch/default/bash/` → `dotfiles/home/.bashrc.d/` (with merging)
-3. Copy `erch/themes/` → `dotfiles/home/.config/omarchy/themes/`
-4. Copy `erch/bin/omarchy-os-conf-*` → `dotfiles/home/.local/bin/`
-5. Verify no configs are missing in dotfiles/
+This is a manual one-way mirror (erch → dotfiles/). Run it whenever erch
+configs change and you want to ship the updates to non-erch targets.
 
 ## System Agnosticism
 

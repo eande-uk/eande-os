@@ -54,10 +54,9 @@ func TestRepoStructure(t *testing.T) {
 		{tc.DotfilesPath("home"), "home/ directory"},
 		{tc.DotfilesPath("home", ".config"), "home/.config/ directory"},
 		{tc.DotfilesPath("home", ".config", "hypr"), "hypr/ config directory"},
-		{tc.DotfilesPath("scripts"), "scripts/ directory"},
-		{tc.DotfilesPath("layer-zero"), "layer-zero/ directory"},
+		{tc.RepoPath("scripts"), "scripts/ directory"},
+		{tc.LayerZeroDir, "layer-zero/ directory"},
 		{tc.LocalBinDir, ".local/bin/ directory"},
-		{tc.LayerZeroDir, "layer-zero/ existing"},
 	}
 
 	for _, d := range requiredDirs {
@@ -71,7 +70,7 @@ func TestRepoStructure(t *testing.T) {
 		path string
 		name string
 	}{
-		{tc.DotfilesPath("Makefile"), "Makefile"},
+		{tc.RepoPath("Makefile"), "Makefile"},
 		{tc.DotfilesPath("home", ".bashrc"), ".bashrc"},
 		{tc.DotfilesPath("home", ".config", "hypr", "hyprland.conf"), "hyprland.conf"},
 	}
