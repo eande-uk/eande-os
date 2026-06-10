@@ -2,7 +2,7 @@
 /.bashrc.d
 /.config
 /.local
-erch/
+/erch/
 *.bak
 *.bak.*
 .DS_Store
