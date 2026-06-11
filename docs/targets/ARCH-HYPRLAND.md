@@ -130,7 +130,7 @@ Some things normally handled by omarchy must be done manually:
 omarchy theme set "Tokyo Night" -- if omarchy is installed
 
 # Without omarchy: manually symlink or copy theme files
-ln -sf ~/.config/omarchy/themes/tokyo-night/colors.toml ~/.config/colors.toml
+ln -sf ~/.config/erch/themes/tokyo-night/colors.toml ~/.config/colors.toml
 ```
 
 ### 5. Post-Deploy

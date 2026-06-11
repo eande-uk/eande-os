@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"eande.uk/os-conf/tests/testutil"
+	"eande.uk/eande-os/tests/testutil"
 )
 
 func TestEnvironmentVariables(t *testing.T) {
@@ -39,8 +39,8 @@ func TestEnvironmentVariables(t *testing.T) {
 		return nil
 	})
 
-	testutil.RunVerify(t, "omarchy is on PATH", func() error {
-		return testutil.CommandExists("omarchy")
+	testutil.RunVerify(t, "erch is on PATH", func() error {
+		return testutil.CommandExists("erch")
 	})
 
 	testutil.RunVerify(t, "make is on PATH", func() error {

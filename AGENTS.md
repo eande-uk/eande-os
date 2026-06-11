@@ -64,8 +64,8 @@ EDUCATION:School/Uni, GAME).
 | `layer-zero/apply` | Apply without confirm |
 | `layer-zero/dry-run` | Preview only |
 | **Theme** | |
-| `theme/list` | `omarchy theme list` |
-| `theme/set NAME=n` | `omarchy theme set` |
+| `theme/list` | `erch theme list` |
+| `theme/set NAME=n` | `erch theme set` |
 | **Tests** | |
 | `test` | Run verification tests (verbose) |
 | `test/quiet` | Run verification tests (quiet) |
@@ -74,7 +74,7 @@ EDUCATION:School/Uni, GAME).
 | `log` | Recent commits (15) |
 | `commit TYPE=t SCOPE=s DESC=d` | Stage all + commit with convention |
 | **erch** | |
-| `erch/init` | Init submodule + deploy to `~/.local/share/omarchy/` |
+| `erch/init` | Init submodule + deploy to `~/.local/share/erch/` |
 | **Contributing** | |
 | `branch/create` | Create `user/$USER` branch from master |
 | `pr` | Open PR from current branch → master |

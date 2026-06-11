@@ -27,7 +27,7 @@ Software developers. All runtimes, containers, and development tooling.
 | Runtimes | python, nodejs, go, rust, dotnet-runtime-9.0 |
 | Containers | docker, docker-compose, docker-buildx |
 | Languages | clang, llvm, ruby, tree-sitter-cli |
-| Editor | neovim, vscode (via omarchy webapp) |
+| Editor | neovim, vscode (via erch webapp) |
 | Tools | git, gh, lazygit, lazydocker, mise, jq, yq |
 | Databases | postgresql-libs, mariadb-libs, sqlite |
 

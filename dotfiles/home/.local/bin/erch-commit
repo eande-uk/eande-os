@@ -1,0 +1,9 @@
+#!/bin/bash
+# erch:summary=Stage all and commit with convention
+# erch:examples=erch commit TYPE=feat SCOPE=tiling DESC="add vim mode toggle"
+
+set -euo pipefail
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/eande/eande-os/dotfiles}"
+
+exec make -C "$DOTFILES_DIR" commit "$@"

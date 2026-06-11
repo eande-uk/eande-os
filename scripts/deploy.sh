@@ -1,13 +1,13 @@
 #!/bin/bash
 # deploy.sh — Copy repo configs to $HOME (one-way push)
-# Replaces stow-omarchy.sh. No symlinks — plain copy with backup.
+# Replaces stow-erch.sh. No symlinks — plain copy with backup.
 # Requires: gum
 
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")/../dotfiles" && pwd)"
 STOW_TARGET="$HOME"
-BACKUP_BASE="$HOME/.config/omarchy/backups"
+BACKUP_BASE="$HOME/.config/erch/backups"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_DIR="$BACKUP_BASE/$TIMESTAMP"
 
@@ -141,15 +141,15 @@ gum spin --spinner dot --title "Linking configs…" -- bash -c "
 
 gum style --foreground "#A3BE8C" "✓ Configs linked"
 
-# --- Sync custom-branding to omarchy/branding ---
+# --- Sync custom-branding to erch/branding ---
 CUSTOM_BRANDING_SRC="$DOTFILES_DIR/home/.config/custom-branding"
-OMARCHY_BRANDING_DST="$HOME/.config/omarchy/branding"
+OMARCHY_BRANDING_DST="$HOME/.config/erch/branding"
 
 if [[ -d "$CUSTOM_BRANDING_SRC" ]]; then
   mkdir -p "$OMARCHY_BRANDING_DST"
-  gum spin --spinner dot --title "Syncing branding to omarchy…" -- \
+  gum spin --spinner dot --title "Syncing branding to erch…" -- \
     cp -a "$CUSTOM_BRANDING_SRC/"* "$OMARCHY_BRANDING_DST/"
-  gum style --foreground "#A3BE8C" "✓ Branding synced to omarchy/branding"
+  gum style --foreground "#A3BE8C" "✓ Branding synced to erch/branding"
 fi
 
 # --- Make scripts executable ---
@@ -160,21 +160,21 @@ if [[ -d "$HOME/.local/bin" ]]; then
 fi
 
 # --- Hooks ---
-if ls "$HOME/.config/omarchy/hooks/"* &>/dev/null 2>&1; then
+if ls "$HOME/.config/erch/hooks/"* &>/dev/null 2>&1; then
   gum spin --spinner dot --title "Making hooks executable…" -- \
-    chmod +x "$HOME/.config/omarchy/hooks/"*
+    chmod +x "$HOME/.config/erch/hooks/"*
   gum style --foreground "#A3BE8C" "✓ Hooks ready"
 fi
 
-# --- Hide stock themes (repeatable: survives omarchy update) ---
-STOCK_THEMES_SRC="$HOME/.local/share/omarchy/themes"
-STOCK_THEMES_DST="$HOME/.config/omarchy/stock-themes"
+# --- Hide stock themes (repeatable: survives erch update) ---
+STOCK_THEMES_SRC="$HOME/.local/share/erch/themes"
+STOCK_THEMES_DST="$HOME/.config/erch/stock-themes"
 
 if [[ -d "$STOCK_THEMES_SRC" ]]; then
   mkdir -p "$STOCK_THEMES_DST"
   for theme_dir in "$STOCK_THEMES_SRC"/*/; do
     theme="$(basename "$theme_dir")"
-    if [[ -d "$theme_dir" && ! -d "$HOME/.config/omarchy/themes/$theme" ]]; then
+    if [[ -d "$theme_dir" && ! -d "$HOME/.config/erch/themes/$theme" ]]; then
       rm -rf "$STOCK_THEMES_DST/$theme"
       mv "$theme_dir" "$STOCK_THEMES_DST/"
     fi
@@ -192,7 +192,7 @@ gum style --border normal --padding "1 2" "$(
     "" \
     "  Configs:  linked via stow from $DOTFILES_DIR/home/" \
     "  Vim Mode:  in menu Trigger → Toggle and via SUPER+SHIFT+V" \
-    "  erch:      omarchy fork at erch/ submodule" \
+    "  erch:      erch fork at erch/ submodule" \
     "  Hooks:     theme-set, font-set, post-update" \
     "  Backup:   $BACKUP_DIR" \
     "" \

@@ -19,13 +19,13 @@ func RunMake(tc *TestContext, target string, args ...string) (string, error) {
 	return runCommand("make", cmdArgs...)
 }
 
-func RunOmarchy(args ...string) (string, error) {
-	return runCommand("omarchy", args...)
+func RunErch(args ...string) (string, error) {
+	return runCommand("erch", args...)
 }
 
-func RunOmarchyJSON(args ...string) (string, error) {
+func RunErchJSON(args ...string) (string, error) {
 	args = append(args, "--json")
-	return runCommand("omarchy-commands", args...)
+	return runCommand("erch-commands", args...)
 }
 
 func runCommand(name string, args ...string) (string, error) {
@@ -41,12 +41,11 @@ func runCommand(name string, args ...string) (string, error) {
 	return out, nil
 }
 
-func OmarchyCommandExists(group, cmd string) (bool, error) {
-	out, err := RunOmarchy("commands", "--json")
+func ErchCommandExists(route string) (bool, error) {
+	out, err := RunErch("commands", "--json")
 	if err != nil {
-		return false, fmt.Errorf("omarchy commands --json failed: %w", err)
+		return false, fmt.Errorf("erch commands --json failed: %w", err)
 	}
-	groupPrefix := fmt.Sprintf(`"group": "%s"`, group)
-	cmdRoute := fmt.Sprintf(`"route": "omarchy %s %s"`, group, cmd)
-	return strings.Contains(out, cmdRoute) && strings.Contains(out, groupPrefix), nil
+	cmdRoute := fmt.Sprintf(`"route": "erch %s"`, route)
+	return strings.Contains(out, cmdRoute), nil
 }

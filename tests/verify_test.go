@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"eande.uk/os-conf/tests/testutil"
+	"eande.uk/eande-os/tests/testutil"
 )
 
 // Port of verify-phase1.sh — validates repo structure, content, and deployment.
@@ -22,9 +22,9 @@ func TestBashrc(t *testing.T) {
 		return testutil.FileExists(tc.HomePath(".bashrc"))
 	})
 
-	testutil.RunVerify(t, ".bashrc sources Omarchy defaults", func() error {
+	testutil.RunVerify(t, ".bashrc sources erch defaults", func() error {
 		return testutil.FileContains(tc.HomePath(".bashrc"),
-			"source ~/.local/share/omarchy/default/bash/rc")
+			"source ~/.local/share/erch/default/bash/rc")
 	})
 
 	testutil.RunVerify(t, ".bashrc sources .bashrc.d/ for local overrides", func() error {
@@ -270,32 +270,32 @@ func TestCustomBranding(t *testing.T) {
 			tc.DotfilesPath("home", ".config", "custom-branding", "screensaver.txt"), 8)
 	})
 
-	testutil.RunVerify(t, "omarchy/branding/about.txt exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".config", "omarchy", "branding", "about.txt"))
+	testutil.RunVerify(t, "erch/branding/about.txt exists", func() error {
+		return testutil.FileExists(tc.DotfilesPath("home", ".config", "erch", "branding", "about.txt"))
 	})
 
-	testutil.RunVerify(t, "omarchy/branding/screensaver.txt exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".config", "omarchy", "branding", "screensaver.txt"))
+	testutil.RunVerify(t, "erch/branding/screensaver.txt exists", func() error {
+		return testutil.FileExists(tc.DotfilesPath("home", ".config", "erch", "branding", "screensaver.txt"))
 	})
 
-	testutil.RunVerify(t, "omarchy/branding/about.txt is a real file (not symlink)", func() error {
-		return testutil.IsNotSymlink(tc.DotfilesPath("home", ".config", "omarchy", "branding", "about.txt"))
+	testutil.RunVerify(t, "erch/branding/about.txt is a real file (not symlink)", func() error {
+		return testutil.IsNotSymlink(tc.DotfilesPath("home", ".config", "erch", "branding", "about.txt"))
 	})
 
-	testutil.RunVerify(t, "omarchy/branding/screensaver.txt is a real file (not symlink)", func() error {
-		return testutil.IsNotSymlink(tc.DotfilesPath("home", ".config", "omarchy", "branding", "screensaver.txt"))
+	testutil.RunVerify(t, "erch/branding/screensaver.txt is a real file (not symlink)", func() error {
+		return testutil.IsNotSymlink(tc.DotfilesPath("home", ".config", "erch", "branding", "screensaver.txt"))
 	})
 
-	testutil.RunVerify(t, "custom-branding and omarchy/branding about.txt in sync", func() error {
+	testutil.RunVerify(t, "custom-branding and erch/branding about.txt in sync", func() error {
 		return testutil.FilesIdentical(
 			tc.DotfilesPath("home", ".config", "custom-branding", "about.txt"),
-			tc.DotfilesPath("home", ".config", "omarchy", "branding", "about.txt"))
+			tc.DotfilesPath("home", ".config", "erch", "branding", "about.txt"))
 	})
 
-	testutil.RunVerify(t, "custom-branding and omarchy/branding screensaver.txt in sync", func() error {
+	testutil.RunVerify(t, "custom-branding and erch/branding screensaver.txt in sync", func() error {
 		return testutil.FilesIdentical(
 			tc.DotfilesPath("home", ".config", "custom-branding", "screensaver.txt"),
-			tc.DotfilesPath("home", ".config", "omarchy", "branding", "screensaver.txt"))
+			tc.DotfilesPath("home", ".config", "erch", "branding", "screensaver.txt"))
 	})
 }
 
@@ -370,11 +370,11 @@ func TestForkReconciliation(t *testing.T) {
 	})
 
 	testutil.RunVerify(t, "hypridle.conf has fork's wake customization", func() error {
-		return testutil.FileContains(hypridlePath, "omarchy-system-wake")
+		return testutil.FileContains(hypridlePath, "erch-system-wake")
 	})
 
-	systemIdlePath := tc.RepoPath("erch", "bin", "omarchy-os-conf-idle")
-	testutil.RunVerify(t, "omarchy-os-conf-idle exists in erch with fork's lock-session", func() error {
+	systemIdlePath := tc.RepoPath("erch", "bin", "erch-system-idle")
+	testutil.RunVerify(t, "erch-system-idle exists in erch with fork's lock-session", func() error {
 		return testutil.FileContains(systemIdlePath, "loginctl lock-session")
 	})
 
@@ -384,20 +384,20 @@ func TestForkReconciliation(t *testing.T) {
 	})
 }
 
-func TestOmarchyMenuExtension(t *testing.T) {
+func TestErchMenuExtension(t *testing.T) {
 	tc, err := testutil.NewTestContext()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	testutil.RunVerify(t, "omarchy-menu exists in erch bin", func() error {
+	testutil.RunVerify(t, "erch-menu exists in erch bin", func() error {
 		return testutil.FileExists(
-			tc.RepoPath("erch", "bin", "omarchy-menu"))
+			tc.RepoPath("erch", "bin", "erch-menu"))
 	})
 
-	testutil.RunVerify(t, "erch omarchy-menu defines menu entry points", func() error {
+	testutil.RunVerify(t, "erch erch-menu defines menu entry points", func() error {
 		return testutil.FileContains(
-			tc.RepoPath("erch", "bin", "omarchy-menu"),
+			tc.RepoPath("erch", "bin", "erch-menu"),
 			"toggle_menu()")
 	})
 }
@@ -414,8 +414,8 @@ func TestTilingMode(t *testing.T) {
 		return testutil.FileExists(tilingConf)
 	})
 
-	testutil.RunVerify(t, "tiling.conf uses native omarchy toggle", func() error {
-		return testutil.FileContains(tilingConf, "omarchy hyprland toggle tiling-mode")
+	testutil.RunVerify(t, "tiling.conf uses native erch toggle", func() error {
+		return testutil.FileContains(tilingConf, "erch hyprland toggle tiling-mode")
 	})
 
 	testutil.RunVerify(t, "legacy tiling-mode-toggle removed", func() error {
@@ -460,7 +460,7 @@ func TestTilingMode(t *testing.T) {
 		return testutil.FileContains(toggleSrc, "Group prev")
 	})
 
-	scalingCycle := tc.RepoPath("erch", "bin", "omarchy-hyprland-monitor-scaling-cycle")
+	scalingCycle := tc.RepoPath("erch", "bin", "erch-hyprland-monitor-scaling-cycle")
 	testutil.RunVerify(t, "scaling-cycle script exists in erch", func() error {
 		return testutil.FileExists(scalingCycle)
 	})
@@ -473,7 +473,7 @@ func TestTilingMode(t *testing.T) {
 		return testutil.FileContains(scalingCycle, "notify-send")
 	})
 
-	legacyScalingCycle := tc.LocalBinPath("omarchy-os-conf-scaling-cycle")
+	legacyScalingCycle := tc.LocalBinPath("erch-hyprland-monitor-scaling-cycle")
 	testutil.RunVerify(t, "legacy scaling-cycle wrapper removed from dotfiles", func() error {
 		return testutil.FileNotExists(legacyScalingCycle)
 	})
@@ -485,7 +485,7 @@ func TestPostUpdateHook(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	hookPath := tc.DotfilesPath("home", ".config", "omarchy", "hooks", "post-update")
+	hookPath := tc.DotfilesPath("home", ".config", "erch", "hooks", "post-update")
 
 	testutil.RunVerify(t, "post-update hook exists", func() error {
 		return testutil.FileExists(hookPath)

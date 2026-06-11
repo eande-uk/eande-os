@@ -6,20 +6,6 @@ format = "[$directory$git_branch$git_status]($style)$character"
 error_symbol = "[✗](bold cyan)"
 success_symbol = "[❯](bold cyan)"
 
-[python]
-symbol = '🐍 '
-style = 'green bold'
-pyenv_version_name = true
-format = 'via [${symbol}(${version} )(\($virtualenv\) )]($style)'
-
-# Language modules — uncomment and configure as needed:
-# [nodejs]
-# format = "via [⬢ $version](bold green) "
-# [golang]
-# format = "via [🐹 $version](bold cyan) "
-# [rust]
-# format = "via [🦀 $version](bold red) " 
-
 [directory]
 truncation_length = 2
 truncation_symbol = "…/"

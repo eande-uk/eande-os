@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"eande.uk/os-conf/tests/testutil"
+	"eande.uk/eande-os/tests/testutil"
 )
 
 func TestMakeTargets(t *testing.T) {
@@ -83,25 +83,25 @@ func TestRepoStructure(t *testing.T) {
 	}
 }
 
-func TestOmarchyCLIIntegration(t *testing.T) {
+func TestErchCLIIntegration(t *testing.T) {
 	tc, err := testutil.NewTestContext()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	testutil.RunVerify(t, "omarchy version returns a version", func() error {
-		out, err := testutil.RunOmarchy("version")
+	testutil.RunVerify(t, "erch version returns a version", func() error {
+		out, err := testutil.RunErch("version")
 		if err != nil {
 			return err
 		}
 		if out == "" {
-			return errFail("omarchy version returned empty output")
+			return errFail("erch version returned empty output")
 		}
 		return nil
 	})
 
-	testutil.RunVerify(t, "omarchy theme list shows available themes", func() error {
-		out, err := testutil.RunOmarchy("theme", "list")
+	testutil.RunVerify(t, "erch theme list shows available themes", func() error {
+		out, err := testutil.RunErch("theme", "list")
 		if err != nil {
 			return err
 		}
@@ -111,8 +111,8 @@ func TestOmarchyCLIIntegration(t *testing.T) {
 		return nil
 	})
 
-	testutil.RunVerify(t, "omarchy theme current shows a theme", func() error {
-		out, err := testutil.RunOmarchy("theme", "current")
+	testutil.RunVerify(t, "erch theme current shows a theme", func() error {
+		out, err := testutil.RunErch("theme", "current")
 		if err != nil {
 			return err
 		}
@@ -122,8 +122,8 @@ func TestOmarchyCLIIntegration(t *testing.T) {
 		return nil
 	})
 
-	testutil.RunVerify(t, "omarchy commands --json is valid JSON", func() error {
-		out, err := testutil.RunOmarchy("commands", "--json")
+	testutil.RunVerify(t, "erch commands --json is valid JSON", func() error {
+		out, err := testutil.RunErch("commands", "--json")
 		if err != nil {
 			return err
 		}
@@ -140,13 +140,13 @@ func TestOmarchyCLIIntegration(t *testing.T) {
 		return
 	}
 
-	testutil.RunVerify(t, "omarchy cmd present stow succeeds", func() error {
-		_, err := testutil.RunOmarchy("cmd", "present", "stow")
+	testutil.RunVerify(t, "erch cmd present stow succeeds", func() error {
+		_, err := testutil.RunErch("cmd", "present", "stow")
 		return err
 	})
 
-	testutil.RunVerify(t, "omarchy cmd present gum succeeds", func() error {
-		_, err := testutil.RunOmarchy("cmd", "present", "gum")
+	testutil.RunVerify(t, "erch cmd present gum succeeds", func() error {
+		_, err := testutil.RunErch("cmd", "present", "gum")
 		return err
 	})
 }

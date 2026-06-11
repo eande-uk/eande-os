@@ -1,42 +1,28 @@
-# E&E UK — Git config (Inherit→override)
-# Full config with aliases, diff/push/merge settings, and user identity.
-
-[user]
-  name = Wassim EL MNAJJA
-  email = wassim.elmnajja2@gmail.com
+# See https://git-scm.com/docs/git-config
 
 [alias]
-  co = checkout
-  br = branch
-  ci = commit
-  st = status
-
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
 [init]
-  defaultBranch = master
-
+	defaultBranch = master
 [pull]
-  rebase = true
-
+	rebase = true 			 # Rebase (instead of merge) on pull
 [push]
-  autoSetupRemote = true
-
+	autoSetupRemote = true   # Automatically set upstream branch on push
 [diff]
-  algorithm = histogram
-  colorMoved = plain
-  mnemonicPrefix = true
-
+	algorithm = histogram    # Clearer diffs on moved/edited lines
+	colorMoved = plain       # Highlight moved blocks in diffs
+	mnemonicPrefix = true    # More intuitive refs in diff output
 [commit]
-  verbose = true
-
+	verbose = true           # Include diff comment in commit message template
 [column]
-  ui = auto
-
+	ui = auto 			     # Output in columns when possible
 [branch]
-  sort = -committerdate
-
+	sort = -committerdate    # Sort branches by most recent commit first
 [tag]
-  sort = -version:refname
-
+	sort = -version:refname  # Sort version numbers as you would expect
 [rerere]
-  enabled = true
-  autoupdate = true
+	enabled = true           # Record and reuse conflict resolutions
+	autoupdate = true        # Apply stored conflict resolutions automatically

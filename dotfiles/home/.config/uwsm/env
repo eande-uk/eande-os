@@ -1,0 +1,11 @@
+# Changes require a restart to take effect.
+
+# Ensure erch bins are in the path
+export ERCH_PATH=$HOME/.local/share/erch
+export PATH=$ERCH_PATH/bin:$PATH:$HOME/.local/bin
+
+# Set default terminal and editor
+source ~/.config/uwsm/default
+
+# Activate mise if present on the system
+erch-cmd-present mise && eval "$(mise activate bash --shims)"

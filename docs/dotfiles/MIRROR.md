@@ -19,10 +19,10 @@ erch/config/hypr/          →    dotfiles/home/.config/hypr/
 erch/config/tmux/          →    dotfiles/home/.config/tmux/
 erch/config/starship.toml  →    dotfiles/home/.config/starship.toml
 erch/config/fastfetch/     →    dotfiles/home/.config/fastfetch/
-erch/themes/               →    dotfiles/home/.config/omarchy/themes/
-erch/default/branding/     →    dotfiles/home/.config/omarchy/branding/
-erch/default/hooks/        →    dotfiles/home/.config/omarchy/hooks/
-erch/bin/omarchy-os-conf-* →    dotfiles/home/.local/bin/
+erch/themes/               →    dotfiles/home/.config/erch/themes/
+erch/default/branding/     →    dotfiles/home/.config/erch/branding/
+erch/default/hooks/        →    dotfiles/home/.config/erch/hooks/
+erch/bin/erch-* →    dotfiles/home/.local/bin/
 ```
 
 Not all erch content is mirrored. Only the user-facing configs and scripts
@@ -40,8 +40,8 @@ dotfiles/ can be synced from the current erch config state manually:
 # Sync erch configs → dotfiles/
 cp -r erch/config/*        dotfiles/home/.config/
 cp -r erch/default/bash/*  dotfiles/home/.bashrc.d/
-cp -r erch/themes/*        dotfiles/home/.config/omarchy/themes/
-cp    erch/bin/omarchy-os-conf-* dotfiles/home/.local/bin/
+cp -r erch/themes/*        dotfiles/home/.config/erch/themes/
+cp    erch/bin/erch-* dotfiles/home/.local/bin/
 ```
 
 This is a manual one-way mirror (erch → dotfiles/). Run it whenever erch
@@ -65,6 +65,6 @@ dotfiles/ handles config files.
 |---------|--------|
 | `erch/install/` | erch-specific install scripts |
 | `erch/migrations/` | Upgrade path between erch versions |
-| `erch/bin/omarchy-*` (most CLI) | Omarchy-internal commands |
-| `erch/config/omarchy/` | Omarchy's own config (not user-facing) |
+| `erch/bin/erch-*` (most CLI) | erch-internal commands |
+| `erch/config/erch/` | erch's own config (not user-facing) |
 | `erch/test/` | erch-specific tests |

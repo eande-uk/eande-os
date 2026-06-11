@@ -13,7 +13,7 @@ hyprland-guiutils
 waybar
 mako
 walker
-omarchy-walker
+erch-walker
 uwsm
 
 # ── Terminal ─────────────────────────────────────────
@@ -57,7 +57,7 @@ lazygit
 
 # ── Editor ────────────────────────────────────────────
 nvim
-omarchy-nvim
+erch-nvim
 
 # ── Desktop portals ──────────────────────────────────
 xdg-desktop-portal-hyprland
@@ -99,7 +99,7 @@ noto-fonts-emoji
 ttf-jetbrains-mono-nerd
 ttf-ia-writer
 woff2-font-awesome
-omarchy.ttf
+erch.ttf
 
 # ── Icons & themes ────────────────────────────────────
 yaru-icon-theme

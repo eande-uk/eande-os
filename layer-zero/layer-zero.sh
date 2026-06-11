@@ -1,11 +1,11 @@
 #!/bin/bash
-# Layer Zero — Sync system to desired state using omarchy commands.
+# Layer Zero — Sync system to desired state using erch commands.
 #
 # Two-direction sync:
 #   1. Install: items in active categories ON allowlist but not installed → install
 #   2. Remove: items in active categories NOT on allowlist but installed → remove
 #
-# All operations dispatch through omarchy CLI.
+# All operations dispatch through erch CLI.
 #
 # Usage:
 #   ./layer-zero.sh                     # Interactive sync
@@ -59,35 +59,35 @@ done < "$LAYER_ZERO_DIR/allowlist.txt"
 # ─── Handler functions ────────────────────────
 
 # Detection helpers
-is_pacman_installed() { omarchy-pkg-present "$1" &>/dev/null; }
+is_pacman_installed() { erch-pkg-present "$1" &>/dev/null; }
 is_webapp_installed() { [[ -f "$HOME/.local/share/applications/$1.desktop" ]]; }
 is_tui_installed()    { [[ -f "$HOME/.local/share/applications/$1.desktop" ]]; }
 is_npx_installed()    { [[ -f "$HOME/.local/bin/$1" ]]; }
 
 # Install helpers
-pacman_install()      { $DRY_RUN && echo "[DRY-RUN] omarchy-pkg-add $*" || omarchy-pkg-add "$@"; }
+pacman_install()      { $DRY_RUN && echo "[DRY-RUN] erch-pkg-add $*" || erch-pkg-add "$@"; }
 webapp_install()      { local name="$1" url="$2" icon="$3" exec="${4:-}" mime="${5:-}"
-                         if $DRY_RUN; then echo "[DRY-RUN] omarchy-webapp-install $name $url $icon $exec $mime"
+                         if $DRY_RUN; then echo "[DRY-RUN] erch-webapp-install $name $url $icon $exec $mime"
                          else
                            if [[ -n "$exec" ]]; then
-                             omarchy-webapp-install "$name" "$url" "$icon" "$exec" "$mime"
+                             erch-webapp-install "$name" "$url" "$icon" "$exec" "$mime"
                            else
-                             omarchy-webapp-install "$name" "$url" "$icon"
+                             erch-webapp-install "$name" "$url" "$icon"
                            fi
                          fi; }
 tui_install()         { local name="$1" cmd="$2" style="$3" icon="$4"
-                         $DRY_RUN && echo "[DRY-RUN] omarchy-tui-install $name $cmd $style $icon" ||
-                         omarchy-tui-install "$name" "$cmd" "$style" "$icon"; }
+                         $DRY_RUN && echo "[DRY-RUN] erch-tui-install $name $cmd $style $icon" ||
+                         erch-tui-install "$name" "$cmd" "$style" "$icon"; }
 npx_install()         { local cmd="$1" pkg="$2"
-                         $DRY_RUN && echo "[DRY-RUN] omarchy-npx-install $pkg $cmd" ||
-                         omarchy-npx-install "$pkg" "$cmd"; }
+                         $DRY_RUN && echo "[DRY-RUN] erch-npx-install $pkg $cmd" ||
+                         erch-npx-install "$pkg" "$cmd"; }
 
 # Remove helpers
-pacman_remove()       { $DRY_RUN && echo "[DRY-RUN] omarchy-pkg-drop $*" || omarchy-pkg-drop "$@"; }
-webapp_remove()       { if $DRY_RUN; then echo "[DRY-RUN] omarchy-webapp-remove $*"
-                         else omarchy-webapp-remove "$@" &>/dev/null || true; fi; }
-tui_remove()          { if $DRY_RUN; then echo "[DRY-RUN] omarchy-tui-remove $*"
-                         else omarchy-tui-remove "$@" &>/dev/null || true; fi; }
+pacman_remove()       { $DRY_RUN && echo "[DRY-RUN] erch-pkg-drop $*" || erch-pkg-drop "$@"; }
+webapp_remove()       { if $DRY_RUN; then echo "[DRY-RUN] erch-webapp-remove $*"
+                         else erch-webapp-remove "$@" &>/dev/null || true; fi; }
+tui_remove()          { if $DRY_RUN; then echo "[DRY-RUN] erch-tui-remove $*"
+                         else erch-tui-remove "$@" &>/dev/null || true; fi; }
 npx_remove()          { for cmd in "$@"; do
                            $DRY_RUN && echo "[DRY-RUN] rm -f $HOME/.local/bin/$cmd" ||
                            rm -f "$HOME/.local/bin/$cmd"
@@ -379,11 +379,11 @@ if [[ ${#TO_REMOVE_NPX[@]} -gt 0 ]]; then
 fi
 
 # ─── Post-removal theme re-sync ───────────────
-if command -v omarchy &>/dev/null; then
-    CURRENT_THEME=$(omarchy theme current 2>/dev/null || true)
+if command -v erch &>/dev/null; then
+    CURRENT_THEME=$(erch theme current 2>/dev/null || true)
     if [[ -n "$CURRENT_THEME" ]]; then
         echo "Re-syncing theme: $CURRENT_THEME"
-        omarchy theme set "$CURRENT_THEME" &>/dev/null || true
+        erch theme set "$CURRENT_THEME" &>/dev/null || true
     fi
 fi
 

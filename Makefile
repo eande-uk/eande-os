@@ -7,7 +7,7 @@ DOTFILES_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
         diff log commit branch/create pr
 
 help:
-	@echo "E&E UK — Omarchy Dotfiles"
+	@echo "E&E UK — erch Dotfiles"
 	@echo ""
 	@echo "Usage: make <target>"
 	@echo ""
@@ -30,8 +30,8 @@ help:
 	@echo "  layer-zero/dry-run      Preview only"
 	@echo ""
 	@echo "── Layer 2: Rebranding ──"
-	@echo "  theme/list        omarchy theme list"
-	@echo "  theme/set NAME=n  omarchy theme set"
+	@echo "  theme/list        erch theme list"
+	@echo "  theme/set NAME=n  erch theme set"
 	@echo ""
 	@echo "── Layer 4: Tests ──"
 	@echo "  test              Run verification tests (verbose)"
@@ -42,8 +42,8 @@ help:
 	@echo "  log               Recent commits"
 	@echo "  commit TYPE=t SCOPE=s DESC=d  Stage all + commit with convention"
 	@echo ""
-	@echo "── erch (omarchy fork) ──"
-	@echo "  erch/init         Init submodule + deploy to ~/.local/share/omarchy/"
+	@echo "── erch (fork) ──"
+	@echo "  erch/init         Init submodule + deploy to ~/.local/share/erch/"
 	@echo ""
 	@echo "── Contributing ──"
 	@echo "  branch/create     Create user/$$USER branch from master"
@@ -87,7 +87,7 @@ status:
 		echo "  ⚠️  ON ROOT BRANCH — create a user branch: make init"; \
 	fi
 	@echo "erch:  $$(git -C erch rev-parse --short HEAD 2>/dev/null || echo '(not initialized)')"
-	@echo "Theme: $$(omarchy theme current 2>/dev/null || echo '(omarchy not available)')"
+	@echo "Theme: $$(erch theme current 2>/dev/null || echo '(erch not available)')"
 	@echo ""
 	@echo "Uncommitted changes (edit ~/.config/ = edit repo via symlinks):"
 	@git status --short
@@ -105,14 +105,14 @@ layer-zero/dry-run:
 	./layer-zero/layer-zero.sh --dry-run
 
 theme/list:
-	omarchy theme list
+	erch theme list
 
 theme/set:
 	@if [ -z "$(NAME)" ]; then \
 		echo "Usage: make theme/set NAME=\"Theme Name\""; \
 		exit 1; \
 	fi
-	omarchy theme set "$(NAME)"
+	erch theme set "$(NAME)"
 
 test:
 	cd tests && go test ./... -v -count=1

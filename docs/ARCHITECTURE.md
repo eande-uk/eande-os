@@ -36,7 +36,7 @@ the repo for deployment on other systems.
 
 ### Target 1: erch (Standalone)
 
-The forked omarchy distribution. Ships everything:
+The erch fork of Omarchy. Ships everything:
 
 - **L0** (System): Hardware detection, base packages, layer-zero profiles
 - **L1** (Defaults): Shell, env, display server, input defaults
@@ -90,7 +90,7 @@ them at once.
 | L0 Profiles | Authoritative definitions | Not mirrored | Shared by all targets |
 | L1 Defaults | `erch/default/` | `dotfiles/home/` copies | N/A |
 | L2 Configs | `erch/config/` | `dotfiles/home/.config/` copies | N/A |
-| L3 Theme | `erch/themes/` + branding | `dotfiles/home/.config/omarchy/themes/` | N/A |
+| L3 Theme | `erch/themes/` + branding | `dotfiles/home/.config/erch/themes/` | N/A |
 | L4 Scripts | `erch/bin/` | `dotfiles/home/.local/bin/` copies | N/A |
 | Tests | `erch/test/` | `tests/` (cross-platform) | N/A |
 | Deployment | erch/setup.sh | scripts/deploy.sh | layer-zero/layer-zero.sh |

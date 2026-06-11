@@ -91,8 +91,8 @@ After reboot, your erch system is ready:
 - **SUPER+SPACE**: Application menu
 - **SUPER+SHIFT+V**: Vim mode toggle
 - **SUPER+SHIFT+T**: Tiling mode toggle
-- **omarchy theme set "Theme Name"**: Change theme
-- **omarchy update system**: System update
+- **erch theme set "Theme Name"**: Change theme
+- **erch update system**: System update
 
 ## Using dotfiles/ on erch
 

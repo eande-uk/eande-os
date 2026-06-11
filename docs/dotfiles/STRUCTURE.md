@@ -38,7 +38,7 @@ dotfiles/
         │   └── tiling.conf      # Tiling mode settings
         ├── kitty/               # Terminal emulator
         ├── mako/                # Notification daemon
-        ├── omarchy/             # Omarchy-specific overrides
+        ├── erch/             # erch-specific overrides
         │   ├── branding/        # ASCII art (about.txt, screensaver.txt)
         │   ├── hooks/           # Post-update, theme-set, font-set
         │   └── themes/          # Curated theme set (8 themes)
@@ -51,16 +51,16 @@ dotfiles/
             └── style.css
     └── .local/
         └── bin/                 # User-facing scripts
-            ├── omarchy-os-conf-commit
-            ├── omarchy-os-conf-deploy
-            ├── omarchy-os-conf-docs-verify
-            ├── omarchy-os-conf-layer-zero
-            ├── omarchy-os-conf-md-to-html
-            ├── omarchy-os-conf-mmd
-            ├── omarchy-os-conf-pr
-            ├── omarchy-os-conf-rename
-            ├── omarchy-os-conf-status
-            └── omarchy-os-conf-test
+            ├── erch-commit
+            ├── erch-deploy
+            ├── erch-docs-verify
+            ├── erch-layer-zero
+            ├── erch-md-to-html
+            ├── erch-mmd
+            ├── erch-pr
+            ├── erch-rename
+            ├── erch-status
+            └── erch-test
 ```
 
 ## Stow Mechanism
@@ -75,7 +75,7 @@ stow --no-folding -t $HOME home/
 This creates symlinks:
 - `~/.bashrc` → `dotfiles/home/.bashrc`
 - `~/.config/hypr/bindings.conf` → `dotfiles/home/.config/hypr/bindings.conf`
-- `~/.local/bin/omarchy-os-conf-status` → `dotfiles/home/.local/bin/omarchy-os-conf-status`
+- `~/.local/bin/erch-status` → `dotfiles/home/.local/bin/erch-status`
 
 Editing `~/.config/` automatically syncs back to the repo.
 

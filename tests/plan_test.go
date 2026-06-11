@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"eande.uk/os-conf/tests/testutil"
+	"eande.uk/eande-os/tests/testutil"
 )
 
 func TestDocsBehaviourCoherency(t *testing.T) {
@@ -55,7 +55,7 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 			purpose  string
 		}{
 			{tc.LayerZeroDir, "Layer 0 directory"},
-			{tc.DotfilesPath("home", ".config", "omarchy", "themes"), "Layer 2 themes directory"},
+			{tc.DotfilesPath("home", ".config", "erch", "themes"), "Layer 2 themes directory"},
 			{tc.DotfilesPath("home", ".config", "hypr"), "Layer 3 config directory"},
 			{tc.LocalBinDir, "Layer 4 scripts directory"},
 		}

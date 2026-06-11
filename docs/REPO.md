@@ -33,7 +33,7 @@ eande-os/
 │   ├── verify_test.go
 │   ├── e2e_test.go
 │   ├── plan_test.go
-│   ├── omarchy_test.go
+│   ├── erch_test.go
 │   ├── errors_test.go
 │   ├── env_test.go
 │   └── testutil/      # Test helpers
@@ -61,8 +61,8 @@ eande-os/
 | `layer-zero/apply` | Apply without confirm |
 | `layer-zero/dry-run` | Preview only |
 | **Theme** | |
-| `theme/list` | `omarchy theme list` |
-| `theme/set NAME=n` | `omarchy theme set` |
+| `theme/list` | `erch theme list` |
+| `theme/set NAME=n` | `erch theme set` |
 | **Tests** | |
 | `test` | Run verification tests (verbose) |
 | `test/quiet` | Run verification tests (quiet) |
@@ -71,7 +71,7 @@ eande-os/
 | `log` | Recent commits (15) |
 | `commit TYPE=t SCOPE=s DESC=d` | Stage all + commit with convention |
 | **erch** | |
-| `erch/init` | Init submodule + deploy to `~/.local/share/omarchy/` |
+| `erch/init` | Init submodule + deploy to `~/.local/share/erch/` |
 | **Contributing** | |
 | `branch/create` | Create `user/$USER` branch from master |
 | `pr` | Open PR from current branch → master |
@@ -92,16 +92,16 @@ Deployed to `~/.local/bin/` via `make deploy`:
 
 | Script | Purpose |
 |--------|---------|
-| `omarchy-os-conf-commit` | Wrapper → `make commit` |
-| `omarchy-os-conf-deploy` | Wrapper → `make deploy` |
-| `omarchy-os-conf-docs-verify` | Docs consistency checker |
-| `omarchy-os-conf-layer-zero` | Wrapper → `make layer-zero` |
-| `omarchy-os-conf-md-to-html` | Markdown → HTML via pandoc |
-| `omarchy-os-conf-mmd` | Mermaid → SVG/PNG via Docker |
-| `omarchy-os-conf-pr` | Wrapper → `make pr` |
-| `omarchy-os-conf-rename` | Batch file renamer via `fd` |
-| `omarchy-os-conf-status` | Wrapper → `make status` |
-| `omarchy-os-conf-test` | Wrapper → `go test` |
+| `erch-commit` | Wrapper → `make commit` |
+| `erch-deploy` | Wrapper → `make deploy` |
+| `erch-docs-verify` | Docs consistency checker |
+| `erch-layer-zero` | Wrapper → `make layer-zero` |
+| `erch-md-to-html` | Markdown → HTML via pandoc |
+| `erch-mmd` | Mermaid → SVG/PNG via Docker |
+| `erch-pr` | Wrapper → `make pr` |
+| `erch-rename` | Batch file renamer via `fd` |
+| `erch-status` | Wrapper → `make status` |
+| `erch-test` | Wrapper → `go test` |
 
 ## Tests
 
@@ -110,9 +110,9 @@ Go verification tests in `tests/`:
 | Test File | What It Verifies |
 |-----------|-----------------|
 | `verify_test.go` | Repo structure, content, deployment integrity |
-| `e2e_test.go` | `make` targets, repo structure, omarchy CLI |
+| `e2e_test.go` | `make` targets, repo structure, erch CLI |
 | `plan_test.go` | Docs coherence (AGENTS.md, Makefile, plan.md) |
-| `omarchy_test.go` | Omarchy commands discovery, script metadata |
+| `erch_test.go` | Omarchy commands discovery, script metadata |
 | `errors_test.go` | Error paths (deploy on master, missing deps) |
 | `env_test.go` | Environment variables |
 

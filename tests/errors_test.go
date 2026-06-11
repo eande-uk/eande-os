@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"eande.uk/os-conf/tests/testutil"
+	"eande.uk/eande-os/tests/testutil"
 )
 
 func TestErrorPaths(t *testing.T) {

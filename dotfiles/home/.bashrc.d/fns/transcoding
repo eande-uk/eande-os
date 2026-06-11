@@ -1,0 +1,33 @@
+# Transcoding helpers have moved to erch-transcode.
+
+transcode-video-1080p() {
+  erch-transcode "$1" mp4 1080p
+}
+
+transcode-video-4K() {
+  erch-transcode "$1" mp4 4k
+}
+
+transcode-video-gif() {
+  erch-transcode "$1" gif 1080p
+}
+
+img2jpg() {
+  erch-transcode "$1" jpg high
+}
+
+img2jpg-small() {
+  erch-transcode "$1" jpg low
+}
+
+img2jpg-medium() {
+  erch-transcode "$1" jpg medium
+}
+
+img2jpg-large() {
+  erch-transcode "$1" jpg high
+}
+
+img2png() {
+  erch-transcode "$1" png high
+}

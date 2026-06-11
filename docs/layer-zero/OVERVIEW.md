@@ -12,8 +12,8 @@ Layer Zero is a two-direction sync engine:
 - **Items NOT on the allowlist** → remove (prune)
 
 It operates on packages, webapp launchers, TUI launchers, and NPX wrappers.
-All operations dispatch through omarchy CLI commands (`omarchy pkg add`,
-`omarchy pkg drop`, `omarchy webapp install`, etc.).
+All operations dispatch through erch CLI commands (`erch pkg add`,
+`erch pkg drop`, `erch webapp install`, etc.).
 
 ## How It Works on Each Target
 
@@ -47,13 +47,13 @@ and is mirrored to the parent repo's `layer-zero/`.
 Desired state — a unified installer that works across all three targets:
 
 ```
-# On any target (erch, omarchy, Arch+Hyprland):
+# On any target (erch, upstream omarchy, Arch+Hyprland):
 layer-zero/install.sh --profile WORK:Dev
 ```
 
 This script would:
 
-1. Detect the target (erch/omarchy/bare)
+1. Detect the target (erch/upstream/bare)
 2. Install the profile's packages using the appropriate method
 3. Sync the allowlist
 4. Report what was installed and what was pruned

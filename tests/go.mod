@@ -1,3 +1,3 @@
-module eande.uk/os-conf/tests
+module eande.uk/eande-os/tests
 
 go 1.26
