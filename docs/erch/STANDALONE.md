@@ -65,6 +65,7 @@ boot.sh / install.sh
 │  • Runtime optimizations                        │
 │  • Dynamic toggle setup                         │
 │  • First-run migrations                         │
+│  • Wiki & notes: erch wiki (mdbook, pandoc)     │
 └─────────────────────────────────────────────────┘
         │
         ▼

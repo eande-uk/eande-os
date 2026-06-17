@@ -96,7 +96,8 @@ Deployed to `~/.local/bin/` via `make deploy`:
 | `erch-deploy` | Wrapper → `make deploy` |
 | `erch-docs-verify` | Docs consistency checker |
 | `erch-layer-zero` | Wrapper → `make layer-zero` |
-| `erch-md-to-html` | Markdown → HTML via pandoc |
+| `erch-md-to-html` | Markdown → HTML via pandoc (shim → `erch wiki html`) |
+| `erch-wiki` | Wiki and notes (init, serve, html, pdf, build, notes) |
 | `erch-mmd` | Mermaid → SVG/PNG via Docker |
 | `erch-pr` | Wrapper → `make pr` |
 | `erch-rename` | Batch file renamer via `fd` |
