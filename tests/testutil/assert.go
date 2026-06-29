@@ -161,6 +161,64 @@ func bytesEqual(a, b []byte) bool {
 	return true
 }
 
+func DirNotExists(path string) error {
+	_, err := os.Stat(path)
+	if err == nil {
+		return fmt.Errorf("directory still exists (should be removed): %s", path)
+	}
+	if os.IsNotExist(err) {
+		return nil
+	}
+	return fmt.Errorf("stat %s: %w", path, err)
+}
+
+func FileFreeOf(path, pattern string) error {
+	if err := FileExists(path); err != nil {
+		return fmt.Errorf("cannot check content: %w", err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("read %s: %w", path, err)
+	}
+	if strings.Contains(strings.ToLower(string(data)), strings.ToLower(pattern)) {
+		return fmt.Errorf("forbidden pattern %q found in %s", pattern, path)
+	}
+	return nil
+}
+
+func DirFreeOf(root, pattern string) error {
+	var found []string
+	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		ext := filepath.Ext(path)
+		if ext != ".md" && ext != ".sh" && ext != ".conf" && ext != ".toml" &&
+			ext != ".json" && ext != ".yml" && ext != ".yaml" && ext != ".lua" &&
+			ext != ".css" && ext != ".qml" && ext != ".jsonc" {
+			return nil
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil
+		}
+		if strings.Contains(strings.ToLower(string(data)), strings.ToLower(pattern)) {
+			found = append(found, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("walk %s: %w", root, err)
+	}
+	if len(found) > 0 {
+		return fmt.Errorf("forbidden pattern %q found in: %s", pattern, strings.Join(found, ", "))
+	}
+	return nil
+}
+
 func StubFree(root string) error {
 	var found []string
 	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {

@@ -1,7 +1,0 @@
-*.bak
-*.bak.*
-.DS_Store
-*.swp
-*.swo
-*~
-home/.bashrc.d/90-local.sh

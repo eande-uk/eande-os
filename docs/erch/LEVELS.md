@@ -12,7 +12,7 @@ software selection.
 
 | Component | What ships | Details |
 |-----------|-----------|---------|
-| Hardware detection | `erch/bin/omarchy-hw-*` | ASUS ROG, Dell XPS, Framework 16, etc. |
+| Hardware detection | `erch/bin/erch-hw-*` | ASUS ROG, Dell XPS, Framework 16, etc. |
 | Base packages | `install/packaging/base.sh` | Kernel, firmware, drivers, essential CLI |
 | Display manager | SDDM | Login manager + Plymouth boot splash |
 | Networking | iwd, avahi, NetworkManager | Wireless, mDNS, firewall (ufw) |
@@ -55,10 +55,10 @@ tools deployed to `~/.config/`.
 | Launcher | `config/walker/` | Application launcher with theme integration |
 | Notifications | `config/mako/` | Notification daemon with actions and keybinds |
 | OSD | `config/swayosd/` | On-screen display for volume, brightness |
-| Editor | `config/nvim/` | Neovim config (via omarchy-nvim) |
+| Editor | `config/nvim/` | Neovim config |
 | File manager | `config/nautilus-python/` | Nautilus extensions |
 | Git | `config/git/config` | Aliases, diff settings, merge strategy |
-| Tmux | `config/tmux/tmux.conf` | Terminal multiplexer with omarchy theme |
+| Tmux | `config/tmux/tmux.conf` | Terminal multiplexer with erch theme |
 | Starship | `config/starship.toml` | Prompt with git status and language info |
 | Fastfetch | `config/fastfetch/config.jsonc` | System info with branding logo |
 | Btop | `config/btop/btop.conf` | System monitor with theme colors |
@@ -76,7 +76,7 @@ first-run theme activation.
 
 | Component | erch path | Details |
 |-----------|-----------|---------|
-| Color themes | `themes/` (19 themes) | Catppuccin, Nord, Tokyo Night, Gruvbox, etc. |
+| Color themes | `themes/` (21 themes) | Catppuccin, Nord, Tokyo Night, Gruvbox, etc. |
 | Branding | `default/branding/` | ASCII art logos (`about.txt`, `screensaver.txt`) |
 | Branding source | PNG source files | `ee-logo.png`, `ee-mark.png`, `water-mark.png` |
 | Theme hooks | `default/hooks/` | `theme-set`, `font-set`, `post-update` |
@@ -91,26 +91,11 @@ and dynamic toggles.
 
 | Component | erch path | Details |
 |-----------|-----------|---------|
-| Binary scripts | `bin/omarchy-*` (287 commands) | All omarchy CLI commands |
-| Custom scripts | `bin/omarchy-os-conf-*` | DDC brightness, idle, scaling cycle |
-| Migrations | `migrations/` (325 scripts) | Upgrade path between versions |
+| Binary scripts | `bin/erch-*` (317 commands) | All erch CLI commands |
+| Custom scripts | `bin/erch-os-conf-*` | DDC brightness, idle, scaling cycle |
+| Migrations | `migrations/` (343 scripts) | Upgrade path between versions |
 | Hooks | `default/hooks/` | Post-update hook, theme-set hook, font-set hook |
 | Dynamic toggles | `default/hypr/toggles/` | Vim mode, tiling mode, night light, touchpad |
-| User-facing bins | `~/.local/bin/` (via omarchy tooling) | `fd-rename`, `ddcutil-brightness`, etc. |
-| Refresh scripts | `bin/omarchy-refresh-*` | Copy defaults → user config on demand |
-| Restart scripts | `bin/omarchy-restart-*` | Restart individual components |
-| Snapshot | `bin/omarchy-snapshot` | System state snapshots |
-
-## Level Mapping: erch → dotfiles/
-
-When mirroring erch's configs to dotfiles/ for non-erch targets:
-
-| erch Level | dotfiles/ Path | Notes |
-|-----------|---------------|-------|
-| L1 Defaults | `dotfiles/home/.bashrc`, `dotfiles/home/.bashrc.d/` | Shell only; hypr L1 is in L2 |
-| L2 Configs | `dotfiles/home/.config/<app>/` | One-to-one copy from `erch/config/` |
-| L3 Theme | `dotfiles/home/.config/omarchy/themes/` | Theme directories + branding |
-| L4 Scripts | `dotfiles/home/.local/bin/` | User-facing scripts only (not omarchy internals) |
-
-L0 (System) is never mirrored to dotfiles/ — it stays in layer-zero/ as the
-shared profile system.
+| Refresh scripts | `bin/erch-refresh-*` | Copy defaults → user config on demand |
+| Restart scripts | `bin/erch-restart-*` | Restart individual components |
+| Snapshot | `bin/erch-snapshot` | System state snapshots |

@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"os"
 	"strings"
 	"testing"
 
@@ -33,15 +32,11 @@ func TestErrorPaths(t *testing.T) {
 		t.Log("not on master branch — skipping master-guard test")
 	}
 
-	testutil.RunVerify(t, "deploy fails when stow is missing", func() error {
-		_, err := os.Stat("/usr/bin/stow")
-		if err != nil {
-			return testutil.CommandExists("stow")
-		}
-		return nil
+	testutil.RunVerify(t, "stow is installed", func() error {
+		return testutil.CommandExists("stow")
 	})
 
-	testutil.RunVerify(t, "deploy fails when gum is missing", func() error {
+	testutil.RunVerify(t, "gum is installed", func() error {
 		return testutil.CommandExists("gum")
 	})
 }
