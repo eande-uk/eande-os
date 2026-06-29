@@ -15,9 +15,10 @@ func TestErchCommandsDiscovered(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	testutil.RunVerify(t, "erch CLI is available", func() error {
-		return testutil.CommandExists("erch")
-	})
+	if err := testutil.CommandExists("erch"); err != nil {
+		t.Log("erch not on PATH — skipping CLI tests (run 'make deploy')")
+		return
+	}
 
 	testutil.RunVerify(t, "erch commands --json succeeds", func() error {
 		_, err := testutil.RunErch("commands", "--json")
@@ -25,7 +26,7 @@ func TestErchCommandsDiscovered(t *testing.T) {
 	})
 
 	testutil.RunVerify(t, "erch scripts exist in repo with metadata headers", func() error {
-		return checkErchScripts(tc.LocalBinDir)
+		return checkErchScripts(filepath.Join(tc.RepoRoot, "erch", "bin"))
 	})
 
 	if _, err := os.Stat(tc.HomeLocalBinPath("erch-deploy")); err == nil {
@@ -36,7 +37,6 @@ func TestErchCommandsDiscovered(t *testing.T) {
 				"test",
 				"commit",
 				"pr",
-				"layer-zero",
 				"docs-verify",
 			}
 			for _, ec := range expected {
@@ -53,6 +53,45 @@ func TestErchCommandsDiscovered(t *testing.T) {
 	} else {
 		t.Log("erch commands not yet deployed to ~/.local/bin/ — skipping discovery test (run 'make deploy')")
 	}
+}
+
+func TestErchBinFiles(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	erchBin := filepath.Join(tc.RepoRoot, "erch", "bin")
+
+	testutil.RunVerify(t, "erch/bin/ has 200+ erch-* commands", func() error {
+		entries, err := os.ReadDir(erchBin)
+		if err != nil {
+			return err
+		}
+		count := 0
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasPrefix(e.Name(), "erch-") {
+				count++
+			}
+		}
+		if count < 200 {
+			return errFail("only found " + strings.TrimSpace(string(rune(count))) + " erch-* commands, expected >= 200")
+		}
+		return nil
+	})
+
+	testutil.RunVerify(t, "No omarchy-* files remain in erch/bin/", func() error {
+		entries, err := os.ReadDir(erchBin)
+		if err != nil {
+			return err
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasPrefix(e.Name(), "omarchy-") {
+				return errFail("found legacy omarchy-* file: " + e.Name())
+			}
+		}
+		return nil
+	})
 }
 
 func checkErchScripts(dir string) error {

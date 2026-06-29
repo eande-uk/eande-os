@@ -1,7 +1,4 @@
-/.bashrc
-/.bashrc.d
-/.config
-/.local
+/.git/
 /erch/
 *.bak
 *.bak.*

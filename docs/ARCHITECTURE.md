@@ -2,129 +2,88 @@
 
 ## Overview
 
-E&E OS manages a layered desktop configuration across three target platforms,
-with **erch** as the single source of truth. Every config, default, and
-package definition originates in erch and is mirrored outward to the rest of
-the repo for deployment on other systems.
+E&E OS is a **distro hub** — a single repository that orchestrates multiple
+standalone Linux distributions. Each distro lives in its own submodule with
+a complete install pipeline from kernel to userspace.
 
-## Three Targets
+## Three Distros
 
 ```
-                    ┌──────────────────────┐
-                    │   erch (Standalone)  │
-                    │  Source of Truth L0  │
-                    │  ships L0-L4 natively│
-                    └──────────┬───────────┘
-                               │ mirrors
-                    ┌──────────▼───────────┐
-                    │    dotfiles/         │
-                    │  hard copy of erch's │
-                    │  L1-L4 configs       │
-                    └──────────┬───────────┘
-                               │ deploys to
-          ┌────────────────────┼────────────────────┐
-          ▼                    ▼                    ▼
-   ┌──────────────┐   ┌────────────────┐   ┌──────────────┐
-   │    erch      │   │   Upstream     │   │Arch+Hyprland │
-   │  (native)    │   │   Omarchy      │   │  (from bare) │
-   │              │   │                │   │              │
-   │ L0-L4 built  │   │ layer-zero +   │   │ layer-zero + │
-   │ in. dotfiles │   │ dotfiles as    │   │ dotfiles as  │
-   │ compatible . │   │ overlay .      │   │ full config .│
-   └──────────────┘   └────────────────┘   └──────────────┘
+                    ┌──────────────────┐
+                    │    E&E OS Hub    │
+                    │   (eande-os)     │
+                    │  orchestration + │
+                    │  shared docs     │
+                    └────────┬─────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              ▼              ▼              ▼
+       ┌─────────────┐ ┌──────────┐ ┌─────────────┐
+       │    erch     │ │   E-OS   │ │  E-OS-AI    │
+       │  Flagship   │ │ Simpler  │ │ Agent OS    │
+       │  Full L0-L4 │ │ Arch+Hypr│ │ Minimal     │
+       └─────────────┘ └──────────┘ └─────────────┘
 ```
 
-### Target 1: erch (Standalone)
+### erch — E&E Distro (Flagship)
 
-The erch fork of Omarchy. Ships everything:
+Full-featured standalone distro. Ships everything natively:
 
-- **L0** (System): Hardware detection, base packages, layer-zero profiles
+- **L0** (System): Hardware detection, base packages, profile selection
 - **L1** (Defaults): Shell, env, display server, input defaults
 - **L2** (Configs): Application configs (terminal, bar, launcher, editor)
 - **L3** (Theme): Visual branding, color schemes, ASCII art
 - **L4** (Polish): Hooks, migrations, optimizations, dynamic toggles
 
-A fresh erch install progresses automatically through L0 → L4 with profile
-selection (WORK, EDUCATION, GAME) at install time.
+Clone `github.com/eande-uk/erch`, run `./install.sh`.
 
-**dotfiles/** is compatible with erch but not required — erch ships its own
-copies natively. dotfiles/ is a mirror for non-erch deployments.
+### E-OS — E&E OS (Planned)
 
-### Target 2: Upstream Omarchy
+Simpler Arch+Hyprland experience. Standalone distro for users who want
+the E&E desktop without the full erch install pipeline.
 
-A stock omarchy installation (not the erch fork). Gets E&E OS configs via:
+### E-OS-AI — E&E OS AI (Planned)
 
-1. **layer-zero/** — profile-based package management (same system as erch)
-2. **dotfiles/** — stow-deployed config overlay (mirrors erch's L1-L4)
+Agent-focused minimal OS. Designed for autonomous agents that need a
+clean, predictable Linux environment.
 
-No erch fork needed. The repo acts as an add-on config layer.
+## Layer System
 
-### Target 3: Arch + Hyprland (No Omarchy)
+All distros share the same modular layer architecture:
 
-A bare Arch Linux system with Hyprland (no omarchy at all). Gets:
+| Layer | Name | Phase | Description |
+|-------|------|-------|-------------|
+| **L0** | System | install | Hardware detection, base packages, profile selection |
+| **L1** | Defaults | install | Shell, env, display server core configs |
+| **L2** | Configs | install | Application configs (terminal, bar, launcher, editor) |
+| **L3** | Theme | first-run | Visual branding, color schemes, ASCII art |
+| **L4** | Polish | post-install | Hooks, migrations, optimizations, toggles |
 
-1. **layer-zero/** — profile-based package management
-2. **dotfiles/** — full config deployment (replaces what omarchy would provide)
-3. **scripts/** — install helpers for missing omarchy tooling
+### Layer Ownership
 
-This target requires the most setup but ends at the same final state.
-
-## Layer Model
-
-| Layer | Name | Lives In | Description |
-|-------|------|----------|-------------|
-| **L0** | System | `erch/install/` + `layer-zero/` | Hardware detection, base packages, kernel, DM, profile-based pre-installs |
-| **L1** | Defaults | `erch/default/` | Core configs: shell init, env vars, input, display server |
-| **L2** | Configs | `erch/config/` | Application configs: terminals, bars, launchers, editors, git |
-| **L3** | Theme | `erch/themes/` | Visual identity: color schemes, branding, ASCII art, fonts |
-| **L4** | Polish | `erch/bin/` + `erch/migrations/` + `erch/hooks/` | Post-install hooks, migrations, optimizations, runtime toggles |
-
-On erch systems, these layers are applied progressively during install.
-On non-erch systems, dotfiles/ bundles the equivalent configs and applies
-them at once.
-
-## Component Ownership
-
-| Component | erch (SoT) | dotfiles/ (Mirror) | layer-zero/ (Shared) |
-|-----------|-----------|-------------------|---------------------|
-| L0 Profiles | Authoritative definitions | Not mirrored | Shared by all targets |
-| L1 Defaults | `erch/default/` | `dotfiles/home/` copies | N/A |
-| L2 Configs | `erch/config/` | `dotfiles/home/.config/` copies | N/A |
-| L3 Theme | `erch/themes/` + branding | `dotfiles/home/.config/erch/themes/` | N/A |
-| L4 Scripts | `erch/bin/` | `dotfiles/home/.local/bin/` copies | N/A |
-| Tests | `erch/test/` | `tests/` (cross-platform) | N/A |
-| Deployment | erch/setup.sh | scripts/deploy.sh | layer-zero/layer-zero.sh |
-
-### dotfiles/ as Universal Mirror
-
-dotfiles/ is a **hard copy** of erch's L1-L4 configs, structured as a
-standalone stow package. It is system-agnostic — the same files deploy to
-erch, upstream omarchy, and plain Arch+Hyprland.
-
-Sync direction: **erch → dotfiles/** (manual or tool-assisted copy).
-dotfiles/ can fetch the current erch config state on demand.
-
-### layer-zero/ as Cross-Platform Profile System
-
-layer-zero/ controls what gets **pre-installed** on all three targets.
-It is the only component shared identically across erch, upstream omarchy,
-and Arch+Hyprland.
-
-- **erch**: layer-zero profiles are authoritative definitions
-- **Upstream omarchy**: layer-zero runs on top of existing omarchy install
-- **Arch+Hyprland**: layer-zero runs on bare Arch, installs everything
-
-Profiles are use-case categories (WORK:Office/Dev/AI-ML, EDUCATION:School/Uni,
-GAME) that determine pre-installed packages. After setup, users can freely
-install and remove anything. A managed mode exists for organizations that
-need policy enforcement (opt-in, documented as desired state).
+| Layer | erch | E-OS | E-OS-AI |
+|-------|------|------|---------|
+| L0 System | Full install pipeline | Simplified pipeline | Minimal pipeline |
+| L1 Defaults | Shell, Hyprland, env | Shell, Hyprland, env | Agent-first defaults |
+| L2 Configs | Full app configs | Core app configs | Minimal configs |
+| L3 Theme | 21 built-in themes | Curated subset | No theme (headless) |
+| L4 Polish | 300+ CLI commands, migrations | Subset | Agent hooks only |
 
 ## Design Principles
 
-1. **erch is the source of truth** — everything originates there
-2. **dotfiles/ mirrors erch** — same configs, packaged for non-erch targets
-3. **layer-zero is shared** — same profile system across all three targets
-4. **System-agnostic configs** — dotfiles work the same regardless of profile
-5. **User freedom** — profiles are initial state; users modify freely after
-6. **Progressive on erch, flat elsewhere** — erch installs in levels; other
-   targets get the full config at once
+1. **Each submodule is standalone** — works out-of-box independently
+2. **erch is the standard** — other distros follow its layer architecture
+3. **Hub orchestrates** — Makefile targets manage submodule lifecycle
+4. **Shared layer model** — L0-L4 pattern applies to all distros
+5. **No shared code between submodules** — each is self-contained
+
+## Component Ownership
+
+| Component | Location | Notes |
+|-----------|----------|-------|
+| erch distro | `erch/` submodule | Standalone, full L0-L4 |
+| E-OS distro | `E-OS/` submodule | Standalone, simplified |
+| E-OS-AI distro | `E-OS-AI/` submodule | Standalone, agent-focused |
+| Hub orchestration | `Makefile` | Submodule lifecycle |
+| Hub tests | `tests/` | Cross-distro verification |
+| Hub docs | `docs/` | Architecture, erch reference |
