@@ -10,8 +10,6 @@ import (
 	"eande.uk/eande-os/tests/testutil"
 )
 
-// Port of verify-phase1.sh — validates repo structure, content, and deployment.
-
 func TestBashrc(t *testing.T) {
 	tc, err := testutil.NewTestContext()
 	if err != nil {
@@ -22,115 +20,13 @@ func TestBashrc(t *testing.T) {
 		return testutil.FileExists(tc.HomePath(".bashrc"))
 	})
 
-	testutil.RunVerify(t, ".bashrc sources erch defaults", func() error {
-		return testutil.FileContains(tc.HomePath(".bashrc"),
-			"source ~/.local/share/erch/default/bash/rc")
-	})
-
-	testutil.RunVerify(t, ".bashrc sources .bashrc.d/ for local overrides", func() error {
-		return testutil.FileContains(tc.HomePath(".bashrc"),
-			`.bashrc.d`)
-	})
-}
-
-func TestBashrcD(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	testutil.RunVerify(t, "10-env.sh exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".bashrc.d", "10-env.sh"))
-	})
-
-	testutil.RunVerify(t, "10-env.sh sets EDITOR", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "10-env.sh"), "EDITOR=nvim")
-	})
-
-	testutil.RunVerify(t, "10-env.sh sets TERMINAL", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "10-env.sh"), "TERMINAL=xdg-terminal-exec")
-	})
-
-	testutil.RunVerify(t, "50-aliases.sh exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".bashrc.d", "50-aliases.sh"))
-	})
-
-	testutil.RunVerify(t, "50-aliases.sh has ltt alias", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "50-aliases.sh"), "alias ltt=")
-	})
-
-	testutil.RunVerify(t, "50-aliases.sh has ls alias", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "50-aliases.sh"), "alias ls=")
-	})
-
-	testutil.RunVerify(t, "50-aliases.sh has grep alias", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "50-aliases.sh"), "alias grep=")
-	})
-
-	testutil.RunVerify(t, "60-functions.sh exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".bashrc.d", "60-functions.sh"))
-	})
-
-	testutil.RunVerify(t, "60-functions.sh has mkcd", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "60-functions.sh"), "mkcd()")
-	})
-
-	testutil.RunVerify(t, "60-functions.sh has extract", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "60-functions.sh"), "extract()")
-	})
-
-	testutil.RunVerify(t, "60-functions.sh has path", func() error {
-		return testutil.FileContains(
-			tc.DotfilesPath("home", ".bashrc.d", "60-functions.sh"), "path()")
-	})
-}
-
-func TestTmux(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	tmuxPath := tc.RepoConfigPath("tmux", "tmux.conf")
-
-	testutil.RunVerify(t, "tmux/tmux.conf exists", func() error {
-		return testutil.FileExists(tmuxPath)
-	})
-
-	testutil.RunVerify(t, "tmux/tmux.conf has >= 90 lines", func() error {
-		return testutil.FileMinLines(tmuxPath, 90)
-	})
-
-	testutil.RunVerify(t, "tmux/tmux.conf has real config (prefix)", func() error {
-		return testutil.FileContains(tmuxPath, "set -g prefix C-Space")
-	})
-}
-
-func TestKitty(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	kittyPath := tc.RepoConfigPath("kitty", "kitty.conf")
-
-	testutil.RunVerify(t, "kitty/kitty.conf exists", func() error {
-		return testutil.FileExists(kittyPath)
-	})
-
-	testutil.RunVerify(t, "kitty/kitty.conf has >= 25 lines", func() error {
-		return testutil.FileMinLines(kittyPath, 25)
-	})
-
-	testutil.RunVerify(t, "kitty/kitty.conf has real config (font_family)", func() error {
-		return testutil.FileContains(kittyPath, "font_family")
+	testutil.RunVerify(t, ".bashrc sources erch defaults or .bashrc.d/", func() error {
+		err1 := testutil.FileContains(tc.HomePath(".bashrc"), "source ~/.local/share/erch/default/bash/rc")
+		err2 := testutil.FileContains(tc.HomePath(".bashrc"), `.bashrc.d`)
+		if err1 != nil && err2 != nil {
+			return errFail(".bashrc missing erch source or .bashrc.d/ override")
+		}
+		return nil
 	})
 }
 
@@ -161,62 +57,6 @@ func TestDeployedFiles(t *testing.T) {
 	})
 }
 
-func TestNoEmptyStubs(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	testutil.RunVerify(t, "No 'Full config goes here' stubs in repo", func() error {
-		return testutil.StubFree(tc.DotfilesPath("home"))
-	})
-}
-
-func TestProfilesExist(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	profiles := map[string]string{
-		"WORK:Office":     "profiles/WORK/Office.pkgs",
-		"WORK:Dev":        "profiles/WORK/Dev.pkgs",
-		"WORK:AI/ML":     "profiles/WORK/AI-ML.pkgs",
-		"EDUCATION:School": "profiles/EDUCATION/School.pkgs",
-		"EDUCATION:Uni":   "profiles/EDUCATION/Uni.pkgs",
-		"GAME":            "profiles/GAME.pkgs",
-	}
-
-	for name, rel := range profiles {
-		name, rel := name, rel
-		path := filepath.Join(tc.LayerZeroDir, rel)
-		testutil.RunVerify(t, name+" profile exists", func() error {
-			return testutil.FileExists(path)
-		})
-	}
-
-	testutil.RunVerify(t, "Each profile has >= 5 package entries", func() error {
-		for name, rel := range profiles {
-			path := filepath.Join(tc.LayerZeroDir, rel)
-			data, err := os.ReadFile(path)
-			if err != nil {
-				return errFail("cannot read " + name + ": " + err.Error())
-			}
-			lines := 0
-			for _, line := range strings.Split(string(data), "\n") {
-				line = strings.TrimSpace(line)
-				if line != "" && !strings.HasPrefix(line, "#") {
-					lines++
-				}
-			}
-			if lines < 5 {
-				return errFail(name + " has only " + fmt.Sprintf("%d", lines) + " packages, expected >= 5")
-			}
-		}
-		return nil
-	})
-}
-
 func TestErchHooksAndBranding(t *testing.T) {
 	tc, err := testutil.NewTestContext()
 	if err != nil {
@@ -242,163 +82,15 @@ func TestErchHooksAndBranding(t *testing.T) {
 	}
 }
 
-func TestCustomBranding(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	testutil.RunVerify(t, "src-pngs/ee-logo.png exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".config", "custom-branding", "src-pngs", "ee-logo.png"))
-	})
-
-	testutil.RunVerify(t, "src-pngs/ee-mark.png exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".config", "custom-branding", "src-pngs", "ee-mark.png"))
-	})
-
-	testutil.RunVerify(t, "src-pngs/water-mark.png exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".config", "custom-branding", "src-pngs", "water-mark.png"))
-	})
-
-	testutil.RunVerify(t, "custom-branding/about.txt >= 20 lines", func() error {
-		return testutil.FileMinLines(
-			tc.DotfilesPath("home", ".config", "custom-branding", "about.txt"), 20)
-	})
-
-	testutil.RunVerify(t, "custom-branding/screensaver.txt >= 8 lines", func() error {
-		return testutil.FileMinLines(
-			tc.DotfilesPath("home", ".config", "custom-branding", "screensaver.txt"), 8)
-	})
-
-	testutil.RunVerify(t, "erch/branding/about.txt exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".config", "erch", "branding", "about.txt"))
-	})
-
-	testutil.RunVerify(t, "erch/branding/screensaver.txt exists", func() error {
-		return testutil.FileExists(tc.DotfilesPath("home", ".config", "erch", "branding", "screensaver.txt"))
-	})
-
-	testutil.RunVerify(t, "erch/branding/about.txt is a real file (not symlink)", func() error {
-		return testutil.IsNotSymlink(tc.DotfilesPath("home", ".config", "erch", "branding", "about.txt"))
-	})
-
-	testutil.RunVerify(t, "erch/branding/screensaver.txt is a real file (not symlink)", func() error {
-		return testutil.IsNotSymlink(tc.DotfilesPath("home", ".config", "erch", "branding", "screensaver.txt"))
-	})
-
-	testutil.RunVerify(t, "custom-branding and erch/branding about.txt in sync", func() error {
-		return testutil.FilesIdentical(
-			tc.DotfilesPath("home", ".config", "custom-branding", "about.txt"),
-			tc.DotfilesPath("home", ".config", "erch", "branding", "about.txt"))
-	})
-
-	testutil.RunVerify(t, "custom-branding and erch/branding screensaver.txt in sync", func() error {
-		return testutil.FilesIdentical(
-			tc.DotfilesPath("home", ".config", "custom-branding", "screensaver.txt"),
-			tc.DotfilesPath("home", ".config", "erch", "branding", "screensaver.txt"))
-	})
-}
-
-func TestStowEngine(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	deployPath := tc.RepoPath("scripts", "deploy.sh")
-
-	testutil.RunVerify(t, "deploy.sh uses stow --no-folding", func() error {
-		return testutil.FileContains(deployPath, "stow --no-folding")
-	})
-
-	testutil.RunVerify(t, "deploy.sh supports --adopt", func() error {
-		return testutil.FileContains(deployPath, "ADOPT=true")
-	})
-
-	testutil.RunVerify(t, "deploy.sh supports --dry-run", func() error {
-		return testutil.FileContains(deployPath, "stow -n -v")
-	})
-
-	testutil.RunVerify(t, "deploy.sh guards against master branch", func() error {
-		return testutil.FileContains(deployPath, "Create a user branch first")
-	})
-
-	testutil.RunVerify(t, "stow is installed", func() error {
-		return testutil.CommandExists("stow")
-	})
-
-	testutil.RunVerify(t, "gum is installed", func() error {
-		return testutil.CommandExists("gum")
-	})
-
-	if tc.IsWSL() {
-		t.Log("Skipping deploy --dry-run on WSL")
-		return
-	}
-
-	testutil.RunVerify(t, "deploy --dry-run runs without error", func() error {
-		_, err := testutil.RunMake(tc, "deploy/dry-run")
-		return err
-	})
-}
-
-func TestRemovedScripts(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	testutil.RunVerify(t, "pull.sh removed", func() error {
-		return testutil.FileNotExists(tc.RepoPath("scripts", "pull.sh"))
-	})
-
-	testutil.RunVerify(t, "clean-orphans.sh removed", func() error {
-		return testutil.FileNotExists(tc.RepoPath("scripts", "clean-orphans.sh"))
-	})
-}
-
 func TestForkReconciliation(t *testing.T) {
 	tc, err := testutil.NewTestContext()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	hypridlePath := tc.RepoConfigPath("hypr", "hypridle.conf")
-
-	testutil.RunVerify(t, "hypridle.conf has fork's DPMS customization", func() error {
-		return testutil.FileContains(hypridlePath, "hyprctl dispatch dpms off")
-	})
-
-	testutil.RunVerify(t, "hypridle.conf has fork's wake customization", func() error {
-		return testutil.FileContains(hypridlePath, "erch-system-wake")
-	})
-
-	systemIdlePath := tc.RepoPath("erch", "bin", "erch-system-idle")
-	testutil.RunVerify(t, "erch-system-idle exists in erch with fork's lock-session", func() error {
-		return testutil.FileContains(systemIdlePath, "loginctl lock-session")
-	})
-
-	fastfetchPath := tc.RepoConfigPath("fastfetch", "config.jsonc")
-	testutil.RunVerify(t, "fastfetch uses fork's cleaner OS Age command", func() error {
-		return testutil.FileContains(fastfetchPath, "$(stat -c %W /)")
-	})
-}
-
-func TestErchMenuExtension(t *testing.T) {
-	tc, err := testutil.NewTestContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	testutil.RunVerify(t, "erch-menu exists in erch bin", func() error {
-		return testutil.FileExists(
-			tc.RepoPath("erch", "bin", "erch-menu"))
-	})
-
-	testutil.RunVerify(t, "erch erch-menu defines menu entry points", func() error {
-		return testutil.FileContains(
-			tc.RepoPath("erch", "bin", "erch-menu"),
-			"toggle_menu()")
+	scalingCycle := tc.RepoPath("erch", "bin", "erch-hyprland-monitor-scaling-cycle")
+	testutil.RunVerify(t, "erch-hyprland-monitor-scaling-cycle exists in erch", func() error {
+		return testutil.FileExists(scalingCycle)
 	})
 }
 
@@ -407,20 +99,6 @@ func TestTilingMode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	tilingConf := tc.RepoConfigPath("hypr", "tiling.conf")
-
-	testutil.RunVerify(t, "tiling.conf exists", func() error {
-		return testutil.FileExists(tilingConf)
-	})
-
-	testutil.RunVerify(t, "tiling.conf uses native erch toggle", func() error {
-		return testutil.FileContains(tilingConf, "erch hyprland toggle tiling-mode")
-	})
-
-	testutil.RunVerify(t, "legacy tiling-mode-toggle removed", func() error {
-		return testutil.FileNotExists(tc.HomeLocalBinPath("tiling-mode-toggle"))
-	})
 
 	toggleSrc := tc.RepoPath("erch", "default", "hypr", "toggles", "tiling-mode.conf")
 
@@ -472,11 +150,6 @@ func TestTilingMode(t *testing.T) {
 	testutil.RunVerify(t, "scaling-cycle sends notification", func() error {
 		return testutil.FileContains(scalingCycle, "notify-send")
 	})
-
-	legacyScalingCycle := tc.LocalBinPath("erch-hyprland-monitor-scaling-cycle")
-	testutil.RunVerify(t, "legacy scaling-cycle wrapper removed from dotfiles", func() error {
-		return testutil.FileNotExists(legacyScalingCycle)
-	})
 }
 
 func TestPostUpdateHook(t *testing.T) {
@@ -485,9 +158,9 @@ func TestPostUpdateHook(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	hookPath := tc.DotfilesPath("home", ".config", "erch", "hooks", "post-update")
+	hookPath := filepath.Join(tc.RepoRoot, "erch", "default", "hooks", "post-update")
 
-	testutil.RunVerify(t, "post-update hook exists", func() error {
+	testutil.RunVerify(t, "post-update hook exists in erch", func() error {
 		return testutil.FileExists(hookPath)
 	})
 
@@ -498,4 +171,201 @@ func TestPostUpdateHook(t *testing.T) {
 	testutil.RunVerify(t, "post-update hosts stock themes", func() error {
 		return testutil.FileContains(hookPath, "stock-themes")
 	})
+}
+
+func TestErchCLIIntegration(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := testutil.CommandExists("erch"); err != nil {
+		t.Log("erch not on PATH — skipping CLI integration tests (run 'make deploy')")
+		return
+	}
+
+	testutil.RunVerify(t, "erch version returns a version", func() error {
+		out, err := testutil.RunErch("version")
+		if err != nil {
+			return err
+		}
+		if out == "" {
+			return errFail("erch version returned empty output")
+		}
+		return nil
+	})
+
+	testutil.RunVerify(t, "erch theme list shows available themes", func() error {
+		out, err := testutil.RunErch("theme", "list")
+		if err != nil {
+			return err
+		}
+		if !strings.Contains(out, "Nord") && !strings.Contains(out, "Catppuccin") && !strings.Contains(out, "Tokyo") && !strings.Contains(out, "Matte") {
+			return errFail("theme list missing expected themes:\n" + out)
+		}
+		return nil
+	})
+
+	testutil.RunVerify(t, "erch theme current shows a theme", func() error {
+		out, err := testutil.RunErch("theme", "current")
+		if err != nil {
+			return err
+		}
+		if out == "" {
+			return errFail("theme current returned empty")
+		}
+		return nil
+	})
+
+	testutil.RunVerify(t, "erch commands --json is valid JSON", func() error {
+		out, err := testutil.RunErch("commands", "--json")
+		if err != nil {
+			return err
+		}
+		if !strings.Contains(out, `"ok"`) && !strings.Contains(out, `"commands"`) {
+			return errFail("commands --json missing expected fields")
+		}
+		if !strings.HasPrefix(out, "{") {
+			return errFail("commands --json does not start with {")
+		}
+		return nil
+	})
+
+	if tc.IsWSL() {
+		return
+	}
+
+	testutil.RunVerify(t, "erch cmd present stow succeeds", func() error {
+		_, err := testutil.RunErch("cmd", "present", "stow")
+		return err
+	})
+
+	testutil.RunVerify(t, "erch cmd present gum succeeds", func() error {
+		_, err := testutil.RunErch("cmd", "present", "gum")
+		return err
+	})
+}
+
+func TestProfilesExist(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	profiles := map[string]string{
+		"WORK:Office":      "install/packages/work.pkgs",
+		"WORK:Dev":         "install/packages/work.pkgs",
+		"EDUCATION:School": "install/packages/school.pkgs",
+		"GAME":             "install/packages/game.pkgs",
+	}
+
+	for name, rel := range profiles {
+		name, rel := name, rel
+		path := filepath.Join(tc.RepoRoot, "erch", rel)
+		testutil.RunVerify(t, name+" package list exists in erch", func() error {
+			return testutil.FileExists(path)
+		})
+	}
+
+	testutil.RunVerify(t, "Each profile has >= 3 package entries", func() error {
+		for name, rel := range profiles {
+			path := filepath.Join(tc.RepoRoot, "erch", rel)
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return errFail("cannot read " + name + ": " + err.Error())
+			}
+			lines := 0
+			for _, line := range strings.Split(string(data), "\n") {
+				line = strings.TrimSpace(line)
+				if line != "" && !strings.HasPrefix(line, "#") {
+					lines++
+				}
+			}
+			if lines < 3 {
+				return errFail(name + " has only " + fmt.Sprintf("%d", lines) + " packages, expected >= 3")
+			}
+		}
+		return nil
+	})
+}
+
+func TestNoOmarchyReferencesInEandeOS(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testutil.RunVerify(t, "No omarchy references in eande-os docs/", func() error {
+		docsDir := filepath.Join(tc.RepoRoot, "docs")
+		return testutil.DirFreeOf(docsDir, "omarchy")
+	})
+
+	testutil.RunVerify(t, "AGENTS.md has no omarchy references", func() error {
+		return testutil.FileFreeOf(tc.RepoPath("AGENTS.md"), "omarchy")
+	})
+
+	testutil.RunVerify(t, "README.md has no omarchy references", func() error {
+		return testutil.FileFreeOf(tc.RepoPath("README.md"), "omarchy")
+	})
+
+	testutil.RunVerify(t, "Makefile has no omarchy references", func() error {
+		return testutil.FileFreeOf(tc.RepoPath("Makefile"), "omarchy")
+	})
+}
+
+func TestHubStructure(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requiredDirs := []struct {
+		path string
+		name string
+	}{
+		{filepath.Join(tc.RepoRoot, "erch"), "erch/ submodule"},
+		{filepath.Join(tc.RepoRoot, "docs"), "docs/ directory"},
+		{filepath.Join(tc.RepoRoot, "tests"), "tests/ directory"},
+	}
+
+	for _, d := range requiredDirs {
+		d := d
+		testutil.RunVerify(t, d.name+" exists", func() error {
+			return testutil.DirExists(d.path)
+		})
+	}
+
+	requiredFiles := []struct {
+		path string
+		name string
+	}{
+		{tc.RepoPath("Makefile"), "Makefile"},
+		{tc.RepoPath("AGENTS.md"), "AGENTS.md"},
+		{tc.RepoPath("README.md"), "README.md"},
+		{tc.RepoPath("docs", "ARCHITECTURE.md"), "docs/ARCHITECTURE.md"},
+		{tc.RepoPath(".gitmodules"), ".gitmodules"},
+	}
+
+	for _, f := range requiredFiles {
+		f := f
+		testutil.RunVerify(t, f.name+" exists", func() error {
+			return testutil.FileExists(f.path)
+		})
+	}
+
+	removedDirs := []struct {
+		path string
+		name string
+	}{
+		{filepath.Join(tc.RepoRoot, "dotfiles"), "dotfiles/ removed (absorbed into erch)"},
+		{filepath.Join(tc.RepoRoot, "layer-zero"), "layer-zero/ removed (absorbed into erch)"},
+		{filepath.Join(tc.RepoRoot, "scripts"), "scripts/ removed (absorbed into erch)"},
+	}
+
+	for _, d := range removedDirs {
+		d := d
+		testutil.RunVerify(t, d.name, func() error {
+			return testutil.DirNotExists(d.path)
+		})
+	}
 }

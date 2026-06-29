@@ -49,61 +49,6 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 		return nil
 	})
 
-	testutil.RunVerify(t, "plan.md layer table matches actual directory structure", func() error {
-		checks := []struct {
-			path     string
-			purpose  string
-		}{
-			{tc.LayerZeroDir, "Layer 0 directory"},
-			{tc.DotfilesPath("home", ".config", "erch", "themes"), "Layer 2 themes directory"},
-			{tc.DotfilesPath("home", ".config", "hypr"), "Layer 3 config directory"},
-			{tc.LocalBinDir, "Layer 4 scripts directory"},
-		}
-		for _, c := range checks {
-			info, err := os.Stat(c.path)
-			if err != nil {
-				return errFail(c.purpose + " missing: " + c.path)
-			}
-			if !info.IsDir() {
-				return errFail(c.purpose + " not a directory: " + c.path)
-			}
-		}
-		return nil
-	})
-
-	testutil.RunVerify(t, "dotfiles/home/.config/README.md references actual config paths", func() error {
-		dotfilesReadme, err := os.ReadFile(tc.DotfilesPath("home", ".config", "README.md"))
-		if err != nil {
-			return err
-		}
-
-		content := string(dotfilesReadme)
-		if !strings.Contains(content, "home/") {
-			return errFail("dotfiles/home/.config/README.md missing home/ reference")
-		}
-
-		checks := []struct {
-			file     string
-			pattern  string
-		}{
-			{"home/.config/hypr/hyprland.conf", "hyprland.conf"},
-			{"home/.config/hypr/bindings.conf", "bindings.conf"},
-			{"home/.config/hypr/tiling.conf", "tiling.conf"},
-		}
-		for _, c := range checks {
-			fullPath := filepath.Join(tc.DotfilesRoot, filepath.FromSlash(c.file))
-			info, err := os.Stat(fullPath)
-			if err != nil {
-				return errFail("file referenced in docs not found: " + c.file)
-			}
-			_ = info
-			if !strings.Contains(content, c.pattern) {
-				return errFail("dotfiles/home/.config/README.md missing reference to: " + c.pattern)
-			}
-		}
-		return nil
-	})
-
 	testutil.RunVerify(t, "Makefile .PHONY targets have matching recipes", func() error {
 		makefile, err := os.ReadFile(tc.RepoPath("Makefile"))
 		if err != nil {
@@ -120,6 +65,22 @@ func TestDocsBehaviourCoherency(t *testing.T) {
 			}
 			if !strings.Contains(makefileContent, target+":") {
 				return errFail("Makefile .PHONY target missing recipe: " + target)
+			}
+		}
+		return nil
+	})
+
+	testutil.RunVerify(t, "AGENTS.md layer table matches erch layer system", func() error {
+		agents, err := os.ReadFile(tc.RepoPath("AGENTS.md"))
+		if err != nil {
+			return err
+		}
+		content := string(agents)
+
+		layers := []string{"L0", "L1", "L2", "L3", "L4"}
+		for _, layer := range layers {
+			if !strings.Contains(content, layer) {
+				return errFail("AGENTS.md missing layer reference: " + layer)
 			}
 		}
 		return nil
@@ -146,15 +107,11 @@ func TestBranchingModelConsistency(t *testing.T) {
 	docFiles := []string{
 		tc.RepoPath("AGENTS.md"),
 		tc.RepoPath("README.md"),
-		tc.DotfilesPath("home", ".config", "README.md"),
 	}
 
 	for _, doc := range docFiles {
 		doc := doc
-		name := filepath.Base(filepath.Dir(doc)) + "/" + filepath.Base(doc)
-		if doc == tc.RepoPath("README.md") {
-			name = "root/README.md"
-		}
+		name := filepath.Base(doc)
 		testutil.RunVerify(t, name+" mentions user branch model", func() error {
 			data, err := os.ReadFile(doc)
 			if err != nil {
@@ -169,6 +126,50 @@ func TestBranchingModelConsistency(t *testing.T) {
 			return nil
 		})
 	}
+}
+
+func TestSubmoduleReferences(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testutil.RunVerify(t, ".gitmodules references erch submodule", func() error {
+		return testutil.FileContains(tc.RepoPath(".gitmodules"), "erch")
+	})
+
+	testutil.RunVerify(t, "AGENTS.md mentions erch as active distro", func() error {
+		agents, err := os.ReadFile(tc.RepoPath("AGENTS.md"))
+		if err != nil {
+			return err
+		}
+		content := string(agents)
+		if !strings.Contains(content, "erch") {
+			return errFail("AGENTS.md missing erch")
+		}
+		if !strings.Contains(content, "Active") {
+			return errFail("AGENTS.md missing Active status for erch")
+		}
+		return nil
+	})
+
+	testutil.RunVerify(t, "AGENTS.md mentions E-OS and E-OS-AI as planned", func() error {
+		agents, err := os.ReadFile(tc.RepoPath("AGENTS.md"))
+		if err != nil {
+			return err
+		}
+		content := string(agents)
+		if !strings.Contains(content, "E-OS") {
+			return errFail("AGENTS.md missing E-OS")
+		}
+		if !strings.Contains(content, "E-OS-AI") {
+			return errFail("AGENTS.md missing E-OS-AI")
+		}
+		if !strings.Contains(content, "Planned") {
+			return errFail("AGENTS.md missing Planned status")
+		}
+		return nil
+	})
 }
 
 func extractMakeTargets(content string) []string {

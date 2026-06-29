@@ -1,8 +1,8 @@
 # erch — Standalone System
 
-erch is the E&E OS fork of omarchy. It ships the complete desired desktop
-configuration natively — from bare metal to fully polished — without
-requiring any external repo.
+erch is the E&E Distro — the flagship standalone Linux distribution that
+ships the complete desired desktop configuration natively, from bare metal
+to fully polished, without requiring any external repo.
 
 ## What erch Ships
 
@@ -10,7 +10,7 @@ erch bundles everything as built-in defaults:
 
 | Layer | erch Location | Contents |
 |-------|--------------|----------|
-| L0 Profiles | `erch/install/` + `layer-zero/` definitions | Profile selection, hardware detection, base install |
+| L0 Profiles | `erch/install/` | Profile selection, hardware detection, base install |
 | L1 Defaults | `erch/default/` | Shell init, env vars, input, display server |
 | L2 Configs | `erch/config/` | Terminal, bar, launcher, editor, git, etc. |
 | L3 Theme | `erch/themes/` + `erch/default/branding/` | Color schemes, ASCII art, fonts |
@@ -72,28 +72,12 @@ boot.sh / install.sh
    Ready
 ```
 
-## Relationship to Parent Repo
+## Relationship to Hub
 
-The `eande-os` parent repo contains:
+The `eande-os` hub repo contains erch as a submodule alongside other distros
+(E-OS, E-OS-AI). erch is standalone — it does not depend on the hub.
 
-- **erch/** — the submodule (this system)
-- **dotfiles/** — a hard copy mirror of erch's L1-L4 configs for non-erch
-  targets (upstream omarchy, Arch+Hyprland)
-- **layer-zero/** — the shared profile system (authoritative definitions
-  live in erch; the parent repo's copy deploys to non-erch targets)
-- **scripts/** — deployment tooling for non-erch targets
-- **tests/** — cross-platform verification
-
-erch does not depend on the parent repo. The parent repo exists to ship
-erch's configs to systems that don't run erch.
-
-## dotfiles/ Compatibility
-
-dotfiles/ works on erch as a stow overlay. This is useful for:
-
-- Development: edit `~/.config/` and auto-sync to repo
-- Testing: verify configs work on erch before shipping upstream
-- Override: temporarily override erch's built-in defaults
-
-On a stock erch install, dotfiles/ is not needed — everything is already
-in place natively.
+The hub provides:
+- Orchestration (Makefile targets for init, deploy, test)
+- Cross-distro documentation
+- Verification tests

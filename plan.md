@@ -2,35 +2,16 @@
 
 ## Goal
 
-Replace the fragile `os-conf` repo (overrides + wrappers + toggles scattered across layers) with a clean architecture: omarchy fork as submodule + portable dotfiles.
+- eande-os, a hub for different Linux Distros, by E&E Tech
 
-## Changes from os-conf
+## TODOS
 
-### Removed (moved to erch fork)
-- `dotfiles/omarchy-default/toggles/tiling-mode.conf` → `erch/default/hypr/toggles/tiling-mode.conf`
-- `dotfiles/home/.config/erch/extensions/menu.sh` → baked into `erch/bin/omarchy-menu`
-- `dotfiles/home/.local/bin/erch-idle` → `erch/bin/erch-idle`
-- `dotfiles/home/.local/bin/idle-resume` → `erch/bin/idle-resume`
-- `dotfiles/home/.local/bin/erch-scaling-cycle` → `erch/bin/omarchy-hyprland-monitor-scaling-cycle`
-- `dotfiles/home/.local/bin/erch-brightness-ddc` → `erch/bin/erch-brightness-ddc`
-- `dotfiles/home/.local/bin/erch-source-ddc` → `erch/bin/erch-source-ddc`
-- `dotfiles/home/.config/hypr/bindings.conf` (SUPER+SPACE line removed — handled by fork)
+1. new purpose and structure: (reconcile with old without losing functionality)
+    - erch elevated to standalone official E&E distro, all omarchy refs removed (without loosing our desired functionality)
+    - eande-os, offers [erch: E&E Distro, E-OS: An array of simpler distro based functionality(Arch+hyperland), E-OS-AI: OS for agents (TALOS example)].
+    - ALL OSs we offer shld manage everything from kernel to user space, ie a better modular layer system (respecting Privacy and openness)
 
-### Simplified deploy.sh
-- Removed toggle copy to `~/.local/share/erch/default/hypr/toggles/`
-- Removed wrapper creation in `~/.local/share/erch/bin/`
-- Removed scaling-cycle binary override
+2. the eande-os repo, will have submodules[erch, E-OS, E-OS-AI], and the necessary DOCs & code to manage them,
+however submodules shld be standalone and work out-of-box.
 
-### Simplified post-update hook
-- Removed toggle restore
-- Removed wrapper restore
-- Removed scaling-cycle override
-- Kept stock theme hiding (still needed)
-
-## Verification
-
-1. Clone fresh: `git clone git@github.com:eande-uk/eande-os.git && cd eande-os && git submodule update --init erch/`
-2. Deploy fork: `erch/setup.sh` (or manual copy to `~/.local/share/erch/`)
-3. Deploy dotfiles: `make deploy`
-4. Verify: `hyprctl reload`, SUPER+SPACE → menu, SUPER+SHIFT+V → toggle, menu → Trigger → Toggle → Vim Mode
-5. Verify scripts: `omarchy os-conf idle`, `omarchy os-conf scaling-cycle`
+3. erch is the standard with full functionality, other OSs are targeted for specific needs (Agents OS, E-OS Game console mode, ...)

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# This hook is called with the snake-cased name of the font that has just been set.
-
-notify-send "Font" "Changed to $1"

@@ -1,49 +1,36 @@
-DOTFILES_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+REPO_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-.PHONY: help init setup deploy deploy/restock deploy/dry-run status \
-        adopt \
-        layer-zero layer-zero/apply layer-zero/dry-run \
-        theme/list theme/set test test/quiet \
+.PHONY: help init setup deploy status \
+        erch/init \
+        test test/quiet \
         diff log commit branch/create pr
 
 help:
-	@echo "E&E UK — erch Dotfiles"
+	@echo "E&E OS — Distro Hub"
 	@echo ""
 	@echo "Usage: make <target>"
 	@echo ""
 	@echo "── Lifecycle ──"
-	@echo "  init              Create branch user/$$USER from master + deploy"
-	@echo "  setup             Full bootstrap: init + layer-zero sync"
+	@echo "  init              Create branch user/$$USER from master + init erch"
+	@echo "  setup             Full bootstrap: init + erch deploy"
 	@echo ""
-	@echo "── Deploy (symlinks: repo ↔ $$HOME) ──"
-	@echo "  deploy            Link configs via stow (with backup, errors on master)"
-	@echo "  deploy/dry-run    Preview what deploy would change (stow -n -v)"
-	@echo "  deploy/restock    Re-apply master defaults (checkout → deploy --force → return)"
-	@echo "  adopt             Adopt existing ~/.config/ as your branch defaults"
+	@echo "── Deploy ──"
+	@echo "  deploy            Deploy erch to ~/.local/share/erch/"
 	@echo ""
 	@echo "── Inspect ──"
-	@echo "  status            Show branch, uncommitted changes, stow state"
+	@echo "  status            Show branch, submodules, uncommitted changes"
 	@echo ""
-	@echo "── Layer 0: System state ──"
-	@echo "  layer-zero              Interactive two-direction sync"
-	@echo "  layer-zero/apply        Apply without confirm"
-	@echo "  layer-zero/dry-run      Preview only"
+	@echo "── Submodules ──"
+	@echo "  erch/init         Init erch submodule"
 	@echo ""
-	@echo "── Layer 2: Rebranding ──"
-	@echo "  theme/list        erch theme list"
-	@echo "  theme/set NAME=n  erch theme set"
-	@echo ""
-	@echo "── Layer 4: Tests ──"
+	@echo "── Tests ──"
 	@echo "  test              Run verification tests (verbose)"
 	@echo "  test/quiet        Run verification tests (quiet)"
 	@echo ""
 	@echo "── Git / Commit ──"
 	@echo "  diff              Show uncommitted changes"
-	@echo "  log               Recent commits"
+	@echo "  log               Recent commits (15)"
 	@echo "  commit TYPE=t SCOPE=s DESC=d  Stage all + commit with convention"
-	@echo ""
-	@echo "── erch (fork) ──"
-	@echo "  erch/init         Init submodule + deploy to ~/.local/share/erch/"
 	@echo ""
 	@echo "── Contributing ──"
 	@echo "  branch/create     Create user/$$USER branch from master"
@@ -52,67 +39,38 @@ help:
 
 init:
 	$(MAKE) branch/create
-	./scripts/deploy.sh --adopt
+	$(MAKE) erch/init
 
 setup:
 	$(MAKE) init
-	$(MAKE) layer-zero/apply
+	$(MAKE) deploy
 
 deploy:
-	./scripts/deploy.sh
-
-deploy/dry-run:
-	./scripts/deploy.sh --dry-run
-
-deploy/restock:
-	@CURRENT_BRANCH=$$(git rev-parse --abbrev-ref HEAD); \
-	git stash 2>/dev/null || true; \
-	git checkout master; \
-	./scripts/deploy.sh --force; \
-	git checkout "$$CURRENT_BRANCH"; \
-	git stash pop 2>/dev/null || true; \
-	echo "Restocked from master, returned to $$CURRENT_BRANCH"
-
-adopt:
-	@BRANCH=$$(git rev-parse --abbrev-ref HEAD); \
-	if [ "$$BRANCH" = "main" ] || [ "$$BRANCH" = "master" ]; then \
-		$(MAKE) branch/create; \
-	fi; \
-	./scripts/deploy.sh --adopt
-
-status:
-	@echo "=== Status ==="
-	@echo "Branch: $$(git rev-parse --abbrev-ref HEAD)"
-	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "main" ] || [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ]; then \
-		echo "  ⚠️  ON ROOT BRANCH — create a user branch: make init"; \
-	fi
-	@echo "erch:  $$(git -C erch rev-parse --short HEAD 2>/dev/null || echo '(not initialized)')"
-	@echo "Theme: $$(erch theme current 2>/dev/null || echo '(erch not available)')"
-	@echo ""
-	@echo "Uncommitted changes (edit ~/.config/ = edit repo via symlinks):"
-	@git status --short
-	@echo ""
-	@echo "Stow check (run 'make deploy' to fix):"
-	@stow --no-folding -t $$HOME -n -v home 2>&1 || true
-
-layer-zero:
-	./layer-zero/layer-zero.sh
-
-layer-zero/apply:
-	./layer-zero/layer-zero.sh --apply
-
-layer-zero/dry-run:
-	./layer-zero/layer-zero.sh --dry-run
-
-theme/list:
-	erch theme list
-
-theme/set:
-	@if [ -z "$(NAME)" ]; then \
-		echo "Usage: make theme/set NAME=\"Theme Name\""; \
+	@if [ ! -d "erch/.git" ]; then \
+		echo "erch submodule not initialized. Run: make erch/init"; \
 		exit 1; \
 	fi
-	erch theme set "$(NAME)"
+	@echo "Deploying erch..."
+	cd erch && ./install.sh
+
+status:
+	@echo "=== E&E OS Hub Status ==="
+	@echo "Branch: $$(git rev-parse --abbrev-ref HEAD)"
+	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "main" ] || [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ]; then \
+		echo "  WARNING: ON ROOT BRANCH — create a user branch: make init"; \
+	fi
+	@echo ""
+	@echo "Submodules:"
+	@echo "  erch:    $$(git -C erch rev-parse --short HEAD 2>/dev/null || echo '(not initialized)')"
+	@echo "  E-OS:    (planned — repo not yet created)"
+	@echo "  E-OS-AI: (planned — repo not yet created)"
+	@echo ""
+	@echo "Uncommitted changes:"
+	@git status --short
+
+erch/init:
+	git submodule update --init erch/
+	@echo "erch submodule initialized."
 
 test:
 	cd tests && go test ./... -v -count=1
@@ -131,7 +89,7 @@ commit:
 		echo "Usage: make commit TYPE=<type> SCOPE=<scope> DESC=\"<description>\""; \
 		echo ""; \
 		echo "  TYPE: feat|fix|docs|refactor|reconcile|chore|test"; \
-		echo "  SCOPE: optional (e.g. tiling, waybar, layer-zero)"; \
+		echo "  SCOPE: optional (e.g. erch, e-os, e-os-ai)"; \
 		echo "  DESC: required, imperative, no period"; \
 		exit 1; \
 	fi
@@ -146,10 +104,6 @@ branch/create:
 		git checkout -b "$$BRANCH" master; \
 		echo "Created branch $$BRANCH from master"; \
 	fi
-
-erch/init:
-	git submodule update --init erch/
-	@echo "erch submodule initialized. Run erch/setup.sh to deploy."
 
 pr:
 	@CURRENT=$$(git rev-parse --abbrev-ref HEAD); \

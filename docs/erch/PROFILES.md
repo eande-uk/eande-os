@@ -1,9 +1,7 @@
 # erch Profile System
 
 During a fresh erch install, the user selects a **profile** that determines
-which packages are pre-installed at L0. This follows the same pattern as
-omarchy's install flow: the installer presents profile options, the user
-chooses, and the system configures itself accordingly.
+which packages are pre-installed at L0.
 
 ## Profiles
 
@@ -22,16 +20,12 @@ Each profile ships a curated set of packages at install time. Packages are
 organized in categories following the same structure as `layer-zero/bloat/`:
 
 ```
-layer-zero/
-├── profiles/
-│   ├── WORK/
-│   │   ├── Office.pkgs         # libreoffice, thunderbird, slack, zoom
-│   │   ├── Dev.pkgs            # python, node, go, rust, docker, vscode
-│   │   └── AI-ML.pkgs          # cuda, pytorch, jupyter, tensorflow
-│   ├── EDUCATION/
-│   │   ├── School.pkgs         # gcompris, ktouch, kstars, marble
-│   │   └── Uni.pkgs            # texlive, r, matlab, zotero, jabref
-│   └── GAME.pkgs               # steam, heroic, lutris, retroarch, moonlight
+install/packages/
+├── common.pkgs         # Always installed
+├── work.pkgs           # WORK profile packages
+├── school.pkgs         # EDUCATION:School packages
+├── game.pkgs           # GAME profile packages
+└── all.pkgs            # Everything
 ```
 
 Profiles can be composed. A user might select both `WORK:Dev` and `GAME`,
@@ -45,7 +39,7 @@ Regardless of profile, every erch install includes the core allowlist:
 - Terminal (Alacritty, Kitty, Foot)
 - Shell tooling (bash-completion, bat, fd, fzf, ripgrep, zoxide)
 - Git + GitHub CLI
-- Neovim (omarchy-nvim)
+- Neovim
 - Fonts (JetBrains Mono Nerd, Noto, Font Awesome)
 - Desktop portals, auth, secrets
 - Display tools (grim, slurp, satty, wl-clipboard)
