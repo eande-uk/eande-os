@@ -311,3 +311,196 @@ func TestEOSBinMetadata(t *testing.T) {
 		t.Errorf("Missing e-os:summary metadata: %s", strings.Join(missing, "; "))
 	}
 }
+
+func TestISOStructure(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	isoProfiles := []string{"erch", "e-os-console", "e-os-school", "e-os-uni", "e-os-org"}
+
+	for _, profile := range isoProfiles {
+		profile := profile
+		isoDir := filepath.Join(tc.RepoRoot, "iso", profile)
+
+		testutil.RunVerify(t, "iso/"+profile+"/profiledef.sh exists", func() error {
+			return testutil.FileExists(filepath.Join(isoDir, "profiledef.sh"))
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+"/packages.x86_64 exists", func() error {
+			return testutil.FileExists(filepath.Join(isoDir, "packages.x86_64"))
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+"/pacman.conf exists", func() error {
+			return testutil.FileExists(filepath.Join(isoDir, "pacman.conf"))
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+"/airootfs/root/installer.sh exists", func() error {
+			return testutil.FileExists(filepath.Join(isoDir, "airootfs", "root", "installer.sh"))
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+"/airootfs/etc/systemd/system/getty@tty1.service.d/autologin.conf exists", func() error {
+			return testutil.FileExists(filepath.Join(isoDir, "airootfs", "etc", "systemd", "system", "getty@tty1.service.d", "autologin.conf"))
+		})
+	}
+}
+
+func TestISOInstallerScripts(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	isoProfiles := []string{"erch", "e-os-console", "e-os-school", "e-os-uni", "e-os-org"}
+
+	for _, profile := range isoProfiles {
+		profile := profile
+		installerPath := filepath.Join(tc.RepoRoot, "iso", profile, "airootfs", "root", "installer.sh")
+
+		testutil.RunVerify(t, "iso/"+profile+" installer has bash shebang", func() error {
+			return testutil.FileContains(installerPath, "#!/bin/bash")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" installer has set -eEo pipefail", func() error {
+			return testutil.FileContains(installerPath, "set -eEo pipefail")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" installer has main function", func() error {
+			return testutil.FileContains(installerPath, "main()")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" installer partitions disk", func() error {
+			return testutil.FileContains(installerPath, "sgdisk")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" installer uses pacstrap", func() error {
+			return testutil.FileContains(installerPath, "pacstrap")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" installer sets up Limine", func() error {
+			return testutil.FileContains(installerPath, "limine")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" installer creates user", func() error {
+			return testutil.FileContains(installerPath, "useradd")
+		})
+	}
+}
+
+func TestISOProfiledef(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	isoProfiles := map[string]string{
+		"erch":          "erch",
+		"e-os-console":  "e-os-console",
+		"e-os-school":   "e-os-school",
+		"e-os-uni":      "e-os-uni",
+		"e-os-org":      "e-os-org",
+	}
+
+	for profile, isoName := range isoProfiles {
+		profile, isoName := profile, isoName
+		profiledefPath := filepath.Join(tc.RepoRoot, "iso", profile, "profiledef.sh")
+
+		testutil.RunVerify(t, "iso/"+profile+" profiledef.sh has iso_name", func() error {
+			return testutil.FileContains(profiledefPath, "iso_name=\""+isoName+"\"")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" profiledef.sh has iso_publisher", func() error {
+			return testutil.FileContains(profiledefPath, "iso_publisher=")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" profiledef.sh has bootmodes", func() error {
+			return testutil.FileContains(profiledefPath, "bootmodes=")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" profiledef.sh has file_permissions for installer", func() error {
+			return testutil.FileContains(profiledefPath, "/root/installer.sh")
+		})
+	}
+}
+
+func TestISOPackages(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	isoProfiles := []string{"erch", "e-os-console", "e-os-school", "e-os-uni", "e-os-org"}
+
+	for _, profile := range isoProfiles {
+		profile := profile
+		packagesPath := filepath.Join(tc.RepoRoot, "iso", profile, "packages.x86_64")
+
+		testutil.RunVerify(t, "iso/"+profile+" packages has base", func() error {
+			return testutil.FileContains(packagesPath, "base")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" packages has linux", func() error {
+			return testutil.FileContains(packagesPath, "linux")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" packages has mkinitcpio-archiso", func() error {
+			return testutil.FileContains(packagesPath, "mkinitcpio-archiso")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" packages has gum", func() error {
+			return testutil.FileContains(packagesPath, "gum")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" packages has btrfs-progs", func() error {
+			return testutil.FileContains(packagesPath, "btrfs-progs")
+		})
+
+		testutil.RunVerify(t, "iso/"+profile+" packages has limine", func() error {
+			return testutil.FileContains(packagesPath, "limine")
+		})
+	}
+}
+
+func TestISODocs(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testutil.RunVerify(t, "docs/ISO.md exists", func() error {
+		return testutil.FileExists(filepath.Join(tc.RepoRoot, "docs", "ISO.md"))
+	})
+
+	testutil.RunVerify(t, "docs/ISO.md has build instructions", func() error {
+		return testutil.FileContains(filepath.Join(tc.RepoRoot, "docs", "ISO.md"), "make iso/build")
+	})
+}
+
+func TestMakefileISOTargets(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	makefilePath := filepath.Join(tc.RepoRoot, "Makefile")
+
+	targets := []string{
+		"iso/build:",
+		"iso/build/erch:",
+		"iso/build/e-os:",
+		"iso/build/e-os-console:",
+		"iso/build/e-os-school:",
+		"iso/build/e-os-uni:",
+		"iso/build/e-os-org:",
+		"iso/clean:",
+		"iso/test:",
+	}
+
+	for _, target := range targets {
+		target := target
+		testutil.RunVerify(t, "Makefile has target "+target, func() error {
+			return testutil.FileContains(makefilePath, target)
+		})
+	}
+}

@@ -1,0 +1,36 @@
+# Mandatory archiso
+base
+linux
+linux-firmware
+mkinitcpio
+mkinitcpio-archiso
+
+# Installer tools
+arch-install-scripts
+parted
+dosfstools
+btrfs-progs
+e2fsprogs
+gdisk
+
+# TUI
+gum
+
+# Network
+networkmanager
+dhcpcd
+
+# Utilities
+git
+base-devel
+nano
+wget
+curl
+
+# Bootloader (for target)
+limine
+efibootmgr
+
+# Microcode
+intel-ucode
+amd-ucode

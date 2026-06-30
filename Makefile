@@ -1,7 +1,9 @@
 REPO_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ISO_DATE := $(shell date --date="@$(SOURCE_DATE_EPOCH)" +%Y.%m.%d 2>/dev/null || date +%Y.%m.%d)
 
 .PHONY: help init setup deploy status \
         erch/init E-OS/init \
+        iso/build iso/build/erch iso/build/e-os iso/clean iso/test \
         test test/quiet \
         diff log commit branch/create pr
 
@@ -23,6 +25,13 @@ help:
 	@echo "── Submodules ──"
 	@echo "  erch/init         Init erch submodule"
 	@echo "  E-OS/init         Init E-OS submodule"
+	@echo ""
+	@echo "── ISO Builds ──"
+	@echo "  iso/build         Build all ISOs"
+	@echo "  iso/build/erch    Build erch ISO"
+	@echo "  iso/build/e-os    Build all E-OS ISOs (4 profiles)"
+	@echo "  iso/clean         Clean build artifacts"
+	@echo "  iso/test          Test ISOs with QEMU"
 	@echo ""
 	@echo "── Tests ──"
 	@echo "  test              Run verification tests (verbose)"
@@ -77,6 +86,62 @@ erch/init:
 E-OS/init:
 	git submodule update --init E-OS/
 	@echo "E-OS submodule initialized."
+
+iso/build:
+	$(MAKE) iso/build/erch
+	$(MAKE) iso/build/e-os
+
+iso/build/erch:
+	@echo "Building erch ISO..."
+	@command -v mkarchiso >/dev/null 2>&1 || { echo "Error: archiso not installed. Run: sudo pacman -S archiso"; exit 1; }
+	sudo mkarchiso -v -w /tmp/archiso-work-erch -o iso/out iso/erch
+	@echo "erch ISO: iso/out/erch-$(ISO_DATE)-x86_64.iso"
+
+iso/build/e-os:
+	$(MAKE) iso/build/e-os-console
+	$(MAKE) iso/build/e-os-school
+	$(MAKE) iso/build/e-os-uni
+	$(MAKE) iso/build/e-os-org
+
+iso/build/e-os-console:
+	@echo "Building E-OS Console ISO..."
+	@command -v mkarchiso >/dev/null 2>&1 || { echo "Error: archiso not installed. Run: sudo pacman -S archiso"; exit 1; }
+	sudo mkarchiso -v -w /tmp/archiso-work-eos-console -o iso/out iso/e-os-console
+	@echo "E-OS Console ISO: iso/out/e-os-console-$(ISO_DATE)-x86_64.iso"
+
+iso/build/e-os-school:
+	@echo "Building E-OS School ISO..."
+	@command -v mkarchiso >/dev/null 2>&1 || { echo "Error: archiso not installed. Run: sudo pacman -S archiso"; exit 1; }
+	sudo mkarchiso -v -w /tmp/archiso-work-eos-school -o iso/out iso/e-os-school
+	@echo "E-OS School ISO: iso/out/e-os-school-$(ISO_DATE)-x86_64.iso"
+
+iso/build/e-os-uni:
+	@echo "Building E-OS Uni ISO..."
+	@command -v mkarchiso >/dev/null 2>&1 || { echo "Error: archiso not installed. Run: sudo pacman -S archiso"; exit 1; }
+	sudo mkarchiso -v -w /tmp/archiso-work-eos-uni -o iso/out iso/e-os-uni
+	@echo "E-OS Uni ISO: iso/out/e-os-uni-$(ISO_DATE)-x86_64.iso"
+
+iso/build/e-os-org:
+	@echo "Building E-OS Org ISO..."
+	@command -v mkarchiso >/dev/null 2>&1 || { echo "Error: archiso not installed. Run: sudo pacman -S archiso"; exit 1; }
+	sudo mkarchiso -v -w /tmp/archiso-work-eos-org -o iso/out iso/e-os-org
+	@echo "E-OS Org ISO: iso/out/e-os-org-$(ISO_DATE)-x86_64.iso"
+
+iso/clean:
+	@echo "Cleaning ISO build artifacts..."
+	rm -rf /tmp/archiso-work-*
+	rm -rf iso/out
+	@echo "Cleaned."
+
+iso/test:
+	@echo "Testing ISOs with QEMU..."
+	@command -v run_archiso >/dev/null 2>&1 || { echo "Error: run_archiso not found. Install archiso."; exit 1; }
+	@if [ -f iso/out/erch-*.iso ]; then \
+		echo "Testing erch ISO..."; \
+		run_archiso -u -i $$(ls iso/out/erch-*.iso | head -1); \
+	else \
+		echo "No erch ISO found. Build first: make iso/build/erch"; \
+	fi
 
 test:
 	cd tests && go test ./... -v -count=1
