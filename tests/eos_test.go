@@ -504,3 +504,150 @@ func TestMakefileISOTargets(t *testing.T) {
 		})
 	}
 }
+
+func TestEOSBooksStructure(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	booksDir := filepath.Join(tc.RepoRoot, "E-OS", "books")
+
+	testutil.RunVerify(t, "books/book.toml exists", func() error {
+		return testutil.FileExists(filepath.Join(booksDir, "book.toml"))
+	})
+
+	testutil.RunVerify(t, "books/.gitignore exists", func() error {
+		return testutil.FileExists(filepath.Join(booksDir, ".gitignore"))
+	})
+
+	testutil.RunVerify(t, "books/src/SUMMARY.md exists", func() error {
+		return testutil.FileExists(filepath.Join(booksDir, "src", "SUMMARY.md"))
+	})
+
+	testutil.RunVerify(t, "books/src/README.md exists", func() error {
+		return testutil.FileExists(filepath.Join(booksDir, "src", "README.md"))
+	})
+
+	testutil.RunVerify(t, "book.toml has title", func() error {
+		return testutil.FileContains(filepath.Join(booksDir, "book.toml"), "title = \"E&E OS Knowledge Base\"")
+	})
+
+	testutil.RunVerify(t, "book.toml has language", func() error {
+		return testutil.FileContains(filepath.Join(booksDir, "book.toml"), "language = \"en\"")
+	})
+}
+
+func TestEOSBookChapters(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	booksSrc := filepath.Join(tc.RepoRoot, "E-OS", "books", "src")
+
+	chapters := []string{
+		"getting-started/installation.md",
+		"getting-started/profiles.md",
+		"getting-started/post-install.md",
+		"system/package-management.md",
+		"system/systemd.md",
+		"system/networking.md",
+		"system/storage.md",
+		"hyprland/getting-started.md",
+		"hyprland/configuration.md",
+		"hyprland/keybinds.md",
+		"hyprland/plugins.md",
+		"shell/bash-fundamentals.md",
+		"shell/scripting.md",
+		"security/hardening-checklist.md",
+		"security/kernel-hardening.md",
+		"security/systemd-sandboxing.md",
+		"theming/color-schemes.md",
+		"theming/waybar.md",
+		"troubleshooting/common-issues.md",
+		"troubleshooting/recovery.md",
+	}
+
+	for _, ch := range chapters {
+		ch := ch
+		testutil.RunVerify(t, "chapter "+ch+" exists", func() error {
+			return testutil.FileExists(filepath.Join(booksSrc, ch))
+		})
+	}
+
+	testutil.RunVerify(t, "all chapters have content (>100 bytes)", func() error {
+		for _, ch := range chapters {
+			path := filepath.Join(booksSrc, ch)
+			info, err := os.Stat(path)
+			if err != nil {
+				return errFail("cannot stat " + ch + ": " + err.Error())
+			}
+			if info.Size() < 100 {
+				return errFail(ch + " is only " + fmt.Sprintf("%d", info.Size()) + " bytes")
+			}
+		}
+		return nil
+	})
+}
+
+func TestEOSBooksCLI(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	booksBin := filepath.Join(tc.RepoRoot, "E-OS", "bin", "e-os-books")
+
+	testutil.RunVerify(t, "e-os-books has bash shebang", func() error {
+		return testutil.FileContains(booksBin, "#!/bin/bash")
+	})
+
+	testutil.RunVerify(t, "e-os-books has set -eEo pipefail", func() error {
+		return testutil.FileContains(booksBin, "set -eEo pipefail")
+	})
+
+	testutil.RunVerify(t, "e-os-books has build command", func() error {
+		return testutil.FileContains(booksBin, "cmd_build")
+	})
+
+	testutil.RunVerify(t, "e-os-books has serve command", func() error {
+		return testutil.FileContains(booksBin, "cmd_serve")
+	})
+
+	testutil.RunVerify(t, "e-os-books has install command", func() error {
+		return testutil.FileContains(booksBin, "cmd_install")
+	})
+
+	testutil.RunVerify(t, "e-os-books has clean command", func() error {
+		return testutil.FileContains(booksBin, "cmd_clean")
+	})
+
+	testutil.RunVerify(t, "e-os-books has e-os:summary metadata", func() error {
+		return testutil.FileContains(booksBin, "e-os:summary=")
+	})
+}
+
+func TestMakefileDocsTargets(t *testing.T) {
+	tc, err := testutil.NewTestContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	makefilePath := filepath.Join(tc.RepoRoot, "Makefile")
+
+	targets := []string{
+		"docs/build:",
+		"docs/serve:",
+		"docs/clean:",
+		"test/qemu:",
+		"test/e2e:",
+	}
+
+	for _, target := range targets {
+		target := target
+		testutil.RunVerify(t, "Makefile has target "+target, func() error {
+			return testutil.FileContains(makefilePath, target)
+		})
+	}
+}

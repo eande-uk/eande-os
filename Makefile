@@ -4,7 +4,8 @@ ISO_DATE := $(shell date --date="@$(SOURCE_DATE_EPOCH)" +%Y.%m.%d 2>/dev/null ||
 .PHONY: help init setup deploy status \
         erch/init E-OS/init \
         iso/build iso/build/erch iso/build/e-os iso/clean iso/test \
-        test test/quiet \
+        docs/build docs/serve docs/clean \
+        test test/quiet test/qemu test/e2e \
         diff log commit branch/create pr
 
 help:
@@ -33,9 +34,16 @@ help:
 	@echo "  iso/clean         Clean build artifacts"
 	@echo "  iso/test          Test ISOs with QEMU"
 	@echo ""
+	@echo "── Knowledge Base ──"
+	@echo "  docs/build        Build the mdBook knowledge base"
+	@echo "  docs/serve        Start live dev server for docs"
+	@echo "  docs/clean        Clean docs build artifacts"
+	@echo ""
 	@echo "── Tests ──"
 	@echo "  test              Run verification tests (verbose)"
 	@echo "  test/quiet        Run verification tests (quiet)"
+	@echo "  test/qemu         Run QEMU e2e boot tests (requires ISOs)"
+	@echo "  test/e2e          Run full e2e (structural + QEMU)"
 	@echo ""
 	@echo "── Git / Commit ──"
 	@echo "  diff              Show uncommitted changes"
@@ -143,11 +151,35 @@ iso/test:
 		echo "No erch ISO found. Build first: make iso/build/erch"; \
 	fi
 
+docs/build:
+	@echo "Building knowledge base..."
+	@command -v mdbook >/dev/null 2>&1 || { echo "Error: mdbook not installed. Run: sudo pacman -S mdbook"; exit 1; }
+	cd E-OS/books && mdbook build
+	@echo "Knowledge base built to E-OS/books/book/"
+
+docs/serve:
+	@echo "Starting knowledge base server..."
+	@command -v mdbook >/dev/null 2>&1 || { echo "Error: mdbook not installed. Run: sudo pacman -S mdbook"; exit 1; }
+	cd E-OS/books && mdbook serve --open
+
+docs/clean:
+	@echo "Cleaning knowledge base build artifacts..."
+	rm -rf E-OS/books/book
+	@echo "Cleaned."
+
 test:
 	cd tests && go test ./... -v -count=1
 
 test/quiet:
 	cd tests && go test ./... -count=1
+
+test/qemu:
+	@echo "Running QEMU e2e tests..."
+	@command -v qemu-system-x86_64 >/dev/null 2>&1 || { echo "Error: QEMU not installed. Run: sudo pacman -S qemu-desktop edk2-ovmf"; exit 1; }
+	@test -e /dev/kvm || { echo "Error: /dev/kvm not available. Enable KVM in BIOS."; exit 1; }
+	cd tests && go test -run "TestQEMU" -v -count=1
+
+test/e2e: test test/qemu
 
 diff:
 	git diff
