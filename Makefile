@@ -1,7 +1,7 @@
 REPO_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: help init setup deploy status \
-        erch/init \
+        erch/init E-OS/init \
         test test/quiet \
         diff log commit branch/create pr
 
@@ -11,7 +11,7 @@ help:
 	@echo "Usage: make <target>"
 	@echo ""
 	@echo "── Lifecycle ──"
-	@echo "  init              Create branch user/$$USER from master + init erch"
+	@echo "  init              Create branch user/$$USER from master + init submodules"
 	@echo "  setup             Full bootstrap: init + erch deploy"
 	@echo ""
 	@echo "── Deploy ──"
@@ -22,6 +22,7 @@ help:
 	@echo ""
 	@echo "── Submodules ──"
 	@echo "  erch/init         Init erch submodule"
+	@echo "  E-OS/init         Init E-OS submodule"
 	@echo ""
 	@echo "── Tests ──"
 	@echo "  test              Run verification tests (verbose)"
@@ -40,6 +41,7 @@ help:
 init:
 	$(MAKE) branch/create
 	$(MAKE) erch/init
+	$(MAKE) E-OS/init
 
 setup:
 	$(MAKE) init
@@ -62,7 +64,7 @@ status:
 	@echo ""
 	@echo "Submodules:"
 	@echo "  erch:    $$(git -C erch rev-parse --short HEAD 2>/dev/null || echo '(not initialized)')"
-	@echo "  E-OS:    (planned — repo not yet created)"
+	@echo "  E-OS:    $$(git -C E-OS rev-parse --short HEAD 2>/dev/null || echo '(not initialized)')"
 	@echo "  E-OS-AI: (planned — repo not yet created)"
 	@echo ""
 	@echo "Uncommitted changes:"
@@ -71,6 +73,10 @@ status:
 erch/init:
 	git submodule update --init erch/
 	@echo "erch submodule initialized."
+
+E-OS/init:
+	git submodule update --init E-OS/
+	@echo "E-OS submodule initialized."
 
 test:
 	cd tests && go test ./... -v -count=1

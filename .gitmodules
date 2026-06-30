@@ -2,3 +2,6 @@
 	path = erch
 	url = git@github.com:eande-uk/erch.git
 	branch = master
+[submodule "E-OS"]
+	path = E-OS
+	url = git@github.com:eande-uk/e-os.git

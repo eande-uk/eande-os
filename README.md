@@ -12,7 +12,7 @@ distro is a standalone submodule with its own full install pipeline.
 | Distro | Description | Status |
 |--------|-------------|--------|
 | **erch** | E&E Distro — full-featured flagship with L0-L4 layer system | Active |
-| **E-OS** | E&E OS — simpler Arch+Hyprland experience | Planned |
+| **E-OS** | E&E OS — simpler Arch+Hyprland experience with 4 profiles | Active |
 | **E-OS-AI** | E&E OS AI — agent-focused minimal OS | Planned |
 
 ## Quick Start
@@ -31,6 +31,7 @@ cd erch
 git clone git@github.com:eande-uk/eande-os.git
 cd eande-os
 make erch/init   # Init erch submodule
+make E-OS/init   # Init E-OS submodule
 make deploy      # Deploy erch
 ```
 
@@ -54,6 +55,7 @@ make deploy      # Deploy erch
 | `make deploy` | Deploy erch to `~/.local/share/erch/` |
 | `make status` | Show branch, submodules, changes |
 | `make test` | Run Go verification tests |
+| `make E-OS/init` | Init E-OS submodule |
 | `make pr` | Open PR to master |
 
 ## Branch Model

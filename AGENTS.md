@@ -5,7 +5,7 @@
 ```
 eande-os/        Distro hub — manages multiple E&E Linux distributions
 ├── erch/        Git submodule — E&E Distro (standalone, full L0-L4)
-├── E-OS/        Planned — simpler Arch+Hyprland distro (repo pending)
+├── E-OS/        Git submodule — simpler Arch+Hyprland distro (4 profiles)
 ├── E-OS-AI/     Planned — agent-focused minimal OS (repo pending)
 ├── docs/        Architecture and reference documentation
 └── tests/       Go verification tests
@@ -22,7 +22,7 @@ that manages everything from kernel to userspace via a modular layer system
 | Distro | Purpose | Status |
 |--------|---------|--------|
 | **erch** | E&E Distro — full-featured, flagship | Active |
-| **E-OS** | E&E OS — simpler Arch+Hyprland experience | Planned |
+| **E-OS** | E&E OS — simpler Arch+Hyprland experience with 4 profiles | Active |
 | **E-OS-AI** | E&E OS AI — agent-focused minimal OS | Planned |
 
 ### Layer System (Shared)
@@ -58,6 +58,7 @@ All distros share the same modular layer architecture:
 | `status` | Show branch, submodules, uncommitted changes |
 | **Submodules** | |
 | `erch/init` | Init erch submodule |
+| `E-OS/init` | Init E-OS submodule |
 | **Tests** | |
 | `test` | Run verification tests (verbose) |
 | `test/quiet` | Run verification tests (quiet) |
